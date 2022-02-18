@@ -1,0 +1,32 @@
+name: Code Style
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  php-cs-fixer:
+    name: Run PHP-CS-Fixer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: php-cs-fixer
+
+      - name: Git checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Run php-cs-fixer
+        run: php-cs-fixer fix
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply php-cs-fixer changes
+          file_pattern: '*.php'
