@@ -1,5 +1,8 @@
 # Filament Excel
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/pxlrbt/filament-excel.svg?include_prereleases)](https://packagist.org/packages/pxlrbt/filament-excel)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
+
 Easy Excel exports for Filament Admin.
 
 ## Installation
@@ -15,7 +18,7 @@ composer install pxlrbt/filament-excel
 
 ## Usage
 
-### Quick start
+### Quickstart
 Go to your Filament resource and add the `ExportAction` to the tables bulk actions:
 
 ```php
