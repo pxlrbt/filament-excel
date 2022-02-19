@@ -6,9 +6,12 @@ Easy Excel exports for Filament Admin.
 
 Install via Composer. This will download the package and [Laravel Excel](https://laravel-excel.com/).
 
+**Requires PHP > 8.1 and Filament > 2.0**
+
 ```bash
 composer install pxlrbt/filament-excel
 ```
+
 
 ## Usage
 
