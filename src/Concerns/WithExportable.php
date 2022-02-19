@@ -4,7 +4,7 @@ namespace pxlrbt\FilamentExcel\Concerns;
 
 trait WithExportable
 {
-    protected object $exportable;
+    protected ?string $exportable = null;
 
     public function withExportable($exportable): self
     {
@@ -15,6 +15,13 @@ trait WithExportable
 
     public function getExportable(): object
     {
-        return $this->exportable ?? $this;
+        return $this->exportable === null
+            ? $this
+            : app($this->exportable, [
+                'action' => $this->action,
+                'resource' => $this->resource,
+                'model' => $this->model,
+                'records' => $this->records,
+            ]);
     }
 }

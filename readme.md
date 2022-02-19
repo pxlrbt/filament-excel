@@ -12,6 +12,7 @@ composer install pxlrbt/filament-excel
 
 ## Usage
 
+### Quick start
 Go to your Filament resource and add the `ExportAction` to the tables bulk actions:
 
 ```php
@@ -38,6 +39,7 @@ class User extends Resource
     }
 }
 ```
+### Options
 
 Optionally configure your export:
 
@@ -55,6 +57,39 @@ Optionally configure your export:
         ->onlyTableFields(), // Export only fields from table (Default)
         ->onlyFormFields(),  // Export only fields from form
     ]);
+```
+
+### Custom exports
+
+If you need even more customization you can use custom export class:
+
+```php
+ExportAction::make('export')
+    ->label('Export Data')
+    ->withExportable(Export::class)
+```
+
+Important data will be injected into the constructor automatically:
+
+```php
+<?php
+
+namespace App\Exports;
+
+use Maatwebsite\Excel\Concerns\FromCollection;
+
+class Export implements FromCollection
+{
+    public function __construct($records, $model, $livewire, $action)
+    {
+        $this->records = $records;
+    }
+
+    public function collection()
+    {
+        return $this->records;
+    }
+}
 ```
 
 

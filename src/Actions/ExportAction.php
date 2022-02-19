@@ -58,6 +58,7 @@ class ExportAction extends BulkAction implements FromCollection, WithCustomChunk
         $this->handleFilename($data);
         $this->handleWriterType($data);
 
+
         return Excel::download(
             $this->getExportable(),
             $this->getFilename(),
