@@ -20,10 +20,9 @@ Go to your Filament resource and add the `ExportAction` to the tables bulk actio
 
 namespace App\Filament\Resources;
 
-use App\Filament\Actions\ExportAction;
+use pxlrbt\FilamentExcel\Actions\ExportAction;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Maatwebsite\Excel\Excel;
 
 class User extends Resource
 {  
