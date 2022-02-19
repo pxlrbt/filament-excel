@@ -54,14 +54,14 @@ Optionally configure your export:
         ->askForFilename(date('Y-m-d') . '-export') // Let the user choose a filename. You may pass a default.
         ->askForWriterType(Excel::XLS)  // Let the user choose an export type. You may pass a default.
         ->allFields() // Export all fields on model
-        ->onlyTableFields(), // Export only fields from table (Default)
+        ->onlyTableFields() // Export only fields from table (Default)
         ->onlyFormFields(),  // Export only fields from form
     ]);
 ```
 
 ### Custom exports
 
-If you need even more customization you can use custom export class:
+If you need even more customization you can use a custom export class:
 
 ```php
 ExportAction::make('export')
