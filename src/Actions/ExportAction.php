@@ -2,6 +2,7 @@
 
 namespace pxlrbt\FilamentExcel\Actions;
 
+use Closure;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,7 +46,7 @@ class ExportAction extends BulkAction implements FromCollection, WithCustomChunk
     protected function setUp(): void
     {
         $this->modalWidth = 'sm';
-        $this->action($this->export(...));
+        $this->action(Closure::fromCallable([$this, 'export']));
     }
 
     protected function export(Collection $records, array $data)

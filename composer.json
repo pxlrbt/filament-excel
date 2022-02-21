@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.0",
         "filament/filament": "^2.0",
         "maatwebsite/excel": "^3.1"
     },
