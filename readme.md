@@ -14,7 +14,7 @@ Install via Composer. This will download the package and [Laravel Excel](https:/
 **Requires PHP > 8.1 and Filament > 2.0**
 
 ```bash
-composer install pxlrbt/filament-excel
+composer require pxlrbt/filament-excel
 ```
 
 
