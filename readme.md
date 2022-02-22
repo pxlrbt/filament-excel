@@ -11,7 +11,7 @@ Easy Excel exports for Filament Admin.
 
 Install via Composer. This will download the package and [Laravel Excel](https://laravel-excel.com/).
 
-**Requires PHP > 8.1 and Filament > 2.0**
+**Requires PHP 8.0 and Filament 2.0**
 
 ```bash
 composer require pxlrbt/filament-excel
@@ -33,12 +33,12 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 
 class User extends Resource
-{  
+{
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //   
+                //
             ])
             ->bulkActions([
                 ExportAction::make('export')
