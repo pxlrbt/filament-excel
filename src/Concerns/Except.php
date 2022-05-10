@@ -4,17 +4,17 @@ namespace pxlrbt\FilamentExcel\Concerns;
 
 trait Except
 {
-    protected ?array $except = null;
+    protected ?array $exceptColumns = null;
 
     public function except(array|string $columns): self
     {
-        $this->except = is_array($columns) ? $columns : func_get_args();
+        $this->exceptColumns = is_array($columns) ? $columns : func_get_args();
 
         return $this;
     }
 
     public function getExcept(): ?array
     {
-        return $this->except;
+        return $this->exceptColumns;
     }
 }
