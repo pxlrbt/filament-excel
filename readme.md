@@ -18,19 +18,18 @@ composer require pxlrbt/filament-excel
 ```
 
 
-## Usage
+## Quickstart
 
-### Quickstart
-Go to your Filament resource and add the `ExportAction` to the tables bulk actions:
+### Admin package 
+Go to your Filament resource and add the `ExportBulkAction` to the tables bulk actions:
 
 ```php
 <?php
 
 namespace App\Filament\Resources;
 
-use pxlrbt\FilamentExcel\Actions\ExportAction;
-use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
+use pxlrbt\FilamentExcel\Export\BulkExport;
 
 class User extends Resource
 {  
@@ -41,64 +40,87 @@ class User extends Resource
                 //   
             ])
             ->bulkActions([
-                ExportAction::make('export')
+                ExportBulkAction::make('export')
             ]);
     }
 }
 ```
-### Options
-
-Optionally configure your export:
+### Table package
 
 ```php
-    ExportAction::make('export')
-        ->label('Export Data') // Button label
-        ->withWriterType(Excel::CSV) // Export type: CSV, XLS, XLSX
-        ->except('password') // Exclude fields
-        ->withFilename('test') // Set a filename
-        ->withHeadings() // Get headings from table or form
-        ->withHeadings(['ID', 'E-Mail']) // Or set headings explicitly
-        ->askForFilename(date('Y-m-d') . '-export') // Let the user choose a filename. You may pass a default.
-        ->askForWriterType(Excel::XLS)  // Let the user choose an export type. You may pass a default.
-        ->allFields() // Export all fields on model
-        ->onlyTableFields() // Export only fields from table (Default)
-        ->onlyFormFields(),  // Export only fields from form
+<?php
+
+namespace App\Filament\Resources;
+
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
+use pxlrbt\FilamentExcel\Export\BulkExport;
+
+$table
+    ->columns([
+        //   
+    ])
+    ->bulkActions([
+        ExportTableBulkAction::make('export')
+    ]);
+```
+
+## Usage
+
+### Use the action
+
+### Configure Exports
+
+### Set filename
+
+## Examples
+
+```php
+    use pxlrbt\FilamentExcel\Export;
+    use pxlrbt\FilamentExcel\Actions;
+    
+    Actions\ExportBulkAction::make('export')
+        ->label('Export Data')
+        ->exportables([
+            Export\BulkExport::make('export_1')
+                ->label('All Fields')                
+                ->fromModel()
+                ->withHeadings([
+                    'id' => 'ID',
+                    'created_at' => 'Date created'
+                ])      
+                ->except('password')
+                ->withFilename(fn ($resource) => date('Y-m-d') . '-' . $resource::getLabel()),
+                
+            Export\BulkExport::make('export_2')
+                ->label('Current table')
+                ->fromTable()
+                ->withFields('created_at')
+                ->withHeadings(['created_at' => 'Date created')
+                ->askForFilename()
+                ->askForWriterType(),
+                
+            Export\BulkExport::make('export_3')
+                ->label('Resource form')
+                ->fromForm()
+                ->askForFilename(date('Y-m-d') . '-export')
+                ->askForWriterType(Maatwebsite\Excel\Excel::CSV),
+                
+        ])        
     ]);
 ```
 
 ### Custom exports
 
-If you need even more customization you can use a custom export class:
+If you need even more customization you can use a extend any of the base export classes, e.g.:
 
 ```php
-ExportAction::make('export')
-    ->label('Export Data')
-    ->withExportable(Export::class)
-```
+use pxlrbt\FilamentExcel\Export;
 
-Important data will be injected into the constructor automatically:
-
-```php
-<?php
-
-namespace App\Exports;
-
-use Maatwebsite\Excel\Concerns\FromCollection;
-
-class Export implements FromCollection
+YourAction extends Export\BulkExport
 {
-    public function __construct($records, $model, $livewire, $action)
-    {
-        $this->records = $records;
-    }
-
-    public function collection()
-    {
-        return $this->records;
-    }
+    
 }
 ```
-
 
 ## Contributing
 

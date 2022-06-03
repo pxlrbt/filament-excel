@@ -2,19 +2,24 @@
 
 namespace pxlrbt\FilamentExcel\Concerns;
 
+use Closure;
+
 trait Except
 {
-    protected ?array $except = null;
+    protected Closure | array | null $except = null;
 
-    public function except(array|string $columns): self
+    public function except(Closure | array | string $columns): self
     {
-        $this->except = is_array($columns) ? $columns : func_get_args();
+        $this->except = match (true) {
+            is_callable($columns), is_array($columns) => $columns,
+            default => func_get_args()
+        };
 
         return $this;
     }
 
     public function getExcept(): ?array
     {
-        return $this->except;
+        return $this->evaluate($this->except);
     }
 }

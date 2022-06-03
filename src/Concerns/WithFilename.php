@@ -2,13 +2,14 @@
 
 namespace pxlrbt\FilamentExcel\Concerns;
 
+use Closure;
 use Illuminate\Support\Str;
 
 trait WithFilename
 {
-    protected ?string $filename = null;
+    protected Closure | string | null $filename = null;
 
-    public function withFilename(?string $filename = null): self
+    public function withFilename(Closure | string $filename): self
     {
         $this->filename = $filename;
 
@@ -17,7 +18,7 @@ trait WithFilename
 
     protected function getFilename(): ?string
     {
-        $filename = $this->filename ?? class_basename($this->model);
+        $filename = $this->evaluate($this->filename) ?? class_basename($this->getModel());
 
         return $this->ensureFilenameHasExtension($filename);
     }
@@ -31,9 +32,9 @@ trait WithFilename
             : $filename . '.' . $this->getDefaultExtension();
     }
 
-    protected function handleFilename(array $data): void
+    protected function extractFilename(): void
     {
-        if ($filename = data_get($data, 'filename')) {
+        if ($filename = data_get($this->formData, 'filename')) {
             $this->withFilename($filename);
         }
     }

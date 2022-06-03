@@ -3,11 +3,11 @@
 namespace pxlrbt\FilamentExcel\Actions;
 
 use Closure;
-use Filament\Pages\Actions\Action;
+use Filament\Tables\Actions\Action;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Export\SingleExport;
 
-class ExportAction extends Action
+class ExportTableAction extends Action
 {
     use ExportableAction;
 
@@ -21,6 +21,8 @@ class ExportAction extends Action
 
     public function export(array $data)
     {
+        dd($this->getLivewire()->getAllTableRecordKeys());
+        dd(\Livewire\invade($this->getLivewire())->getRecords());
         $exportable = $this->getSelectedExportable($data);
         $record = $this->getLivewire()->record;
 

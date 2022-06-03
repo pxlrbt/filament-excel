@@ -10,7 +10,8 @@ trait AskForFilename
     {
         $field = TextInput::make('filename')
             ->label($label ?? __('Filename'))
-            ->default($default ?? '');
+            ->default($default ?? '')
+            ->required();
 
         if (is_callable($callback)) {
             $callback($field);

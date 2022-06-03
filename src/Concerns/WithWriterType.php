@@ -2,13 +2,14 @@
 
 namespace pxlrbt\FilamentExcel\Concerns;
 
+use Closure;
 use Maatwebsite\Excel\Excel;
 
 trait WithWriterType
 {
-    protected ?string $writerType = null;
+    protected Closure | string | null $writerType = null;
 
-    public function withWriterType(?string $writerType = null): self
+    public function withWriterType(Closure | string | null $writerType = null): self
     {
         $this->writerType = $writerType;
 
@@ -17,12 +18,12 @@ trait WithWriterType
 
     protected function getWriterType(): ?string
     {
-        return $this->writerType ?? Excel::XLSX;
+        return $this->evaluate($this->writerType) ?? Excel::XLSX;
     }
 
-    protected function handleWriterType(array $data): void
+    protected function extractWriterType(): void
     {
-        if ($writerType = data_get($data, 'writerType')) {
+        if ($writerType = data_get($this->formData, 'writer_type')) {
             $this->withWriterType($writerType);
         }
     }
