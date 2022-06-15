@@ -5,7 +5,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pxlrbt/filament-excel/Code%20Style?label=code%20style)
 [![Total Downloads](https://img.shields.io/packagist/dt/pxlrbt/filament-excel.svg)](https://packagist.org/packages/pxlrbt/filament-excel)
 
-Easy Excel exports for Filament Admin.
+Easy Excel exports for Filament.
 
 ## Installation
 
@@ -20,18 +20,18 @@ composer require pxlrbt/filament-excel
 
 ## Quickstart
 
-### Admin package 
-Go to your Filament resource and add the `ExportBulkAction` to the tables bulk actions:
+Starting with v0.2 Filament Excel should work with both `filament/filament` and `filament/tables` packages. The most simple usage is just adding `ExportBulkAction` to your bulk actions.
+
+**Example for admin package**
 
 ```php
 <?php
 
 namespace App\Filament\Resources;
 
-use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
-use pxlrbt\FilamentExcel\Export\BulkExport;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportBulkAction;
 
-class User extends Resource
+class UserResource extends Resource
 {  
     public static function table(Table $table): Table
     {
@@ -40,48 +40,216 @@ class User extends Resource
                 //   
             ])
             ->bulkActions([
-                ExportBulkAction::make('export')
+                ExportBulkAction::make()
             ]);
     }
 }
 ```
-### Table package
+
+**Example for table package**
 
 ```php
 <?php
 
 namespace App\Filament\Resources;
 
-use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
-use pxlrbt\FilamentExcel\Export\BulkExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
-$table
-    ->columns([
-        //   
-    ])
-    ->bulkActions([
-        ExportTableBulkAction::make('export')
-    ]);
+public function getTableBulkActions()
+{
+    return  [
+        ExportBulkAction::make()
+    ];
+}
 ```
 
 ## Usage
 
-### Use the action
+Filament Excel comes with three actions you can use:
+- `Actions\Tables\ExportBulkAction` for table bulk actions
+- `Actions\Tables\ExportAction` for table header actions
+- `Actions\Pages\ExportAction` for record pages
 
-### Configure Exports
+Without further configuration they will try to resolve the fields from the table or form definition and output an Excel file.
 
-### Set filename
+### Multiple export classes
 
-## Examples
+You can overwrite the default export class and also configure multiple exports with different settings. The user will be shown a modal to select the export class he wants to use.
 
 ```php
-    use pxlrbt\FilamentExcel\Export;
-    use pxlrbt\FilamentExcel\Actions;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make('table')->fromTable(),
+    ExcelExport::make('form')->fromForm(),
+])
+```
+
+### Closure customization
+
+Many of the functions for customising the export class, accept a Closure that gets passed dynamcic data:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make('table')->withFilename(fn ($resource) => $resource::getLabel()),
+])
+```
+
+The following arguments are available:
+- `$livewire`: Livewire component
+- `$resource`: Resource class
+- `$recordIds`: IDs of selected records (Bulk Action)
+- `$query`: The builder instance 
+- `$model`: Model class
+
+### Setting the filename
+
+The filename is set via `->withFilename()`:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    // Pass a string
+    ExcelExport::make()->withFilename(date('Y-m-d') . ' - export'),
     
-    Actions\ExportBulkAction::make('export')
+    // Or pass a Closure
+    ExcelExport::make()->withFilename(fn ($resource) => $resource::getLabel())
+])
+```
+
+### Setting the file type
+
+You can set the file type via `->withWriterType()`:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
+])
+```
+
+
+### Setting attributes
+
+When using `->formForm()`/`->formTable()`/`->formModel()` the fields are resolved from your table or form definition. You can also provide fields manually or overwrite resolved fields:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->withFields([
+        'name', 'created_at', 'deleted_at',
+    ]),
+])
+```
+
+
+You can also include only a subset of fields (`->only()`) or exclude certain ones (`->except()`):
+
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->fromTable()->except([
+        'created_at', 'updated_at', 'deleted_at',
+    ]),
+    
+    ExcelExport::make()->fromTable()->only([
+        'id', 'name', 'title',
+    ]),
+])
+```
+
+### Setting headings
+
+When using `->formForm()`/`->formTable()`/`->formModel()` the headings are resolved from your table or form definition. You can also provide headings manually or overwrite resolved headings:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->withHeadings([
+        'name' => 'Name',
+        'email' => 'E-Mail',
+        'created_at' => 'Creation Date'
+    ]),
+])
+```
+
+### Ask the user for input
+
+You can let the user pick a filename and writer type by using `->askForFilename()` and `->askForWriterType()`:
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()
+        ->askForFilename()
+## Custom exports
+
+If you need even more customization you can extend the Excel class and implement your own logic.
+
+        ->askForWriterType()
+])
+```
+
+You can also use the users input inside a Closure:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()
+        ->askForFilename()
+        ->withFilename(fn ($filename) => 'prefix-' . $filename)
+])
+```
+
+### Queued exports
+
+Exports for resources with many entries can be queued with `->queue()`. They will be processed in a background job and the user will be notified with a notification on the next page load (or when Livewire is polling). 
+
+The temporary file will be deleted after the first download. Files that are not downloaded will be deleted by a scheduled command after 24 hours.
+
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->queue()
+])
+```
+
+## Custom exports
+
+If you need even more customization you can extend the Excel class and implement your own logic.
+
+
+## Example
+
+```php
+    use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+    use pxlrbt\FilamentExcel\Export\ExcelExport;
+    
+    ExportAction::make('export')
         ->label('Export Data')
-        ->exportables([
-            Export\BulkExport::make('export_1')
+        ->exports([
+            ExcelExport::make('export_1')
                 ->label('All Fields')                
                 ->fromModel()
                 ->withHeadings([
@@ -91,7 +259,7 @@ $table
                 ->except('password')
                 ->withFilename(fn ($resource) => date('Y-m-d') . '-' . $resource::getLabel()),
                 
-            Export\BulkExport::make('export_2')
+            ExcelExport::make('export_2')
                 ->label('Current table')
                 ->fromTable()
                 ->withFields('created_at')
@@ -99,7 +267,7 @@ $table
                 ->askForFilename()
                 ->askForWriterType(),
                 
-            Export\BulkExport::make('export_3')
+            ExcelExport::make('export_3')
                 ->label('Resource form')
                 ->fromForm()
                 ->askForFilename(date('Y-m-d') . '-export')
@@ -107,19 +275,6 @@ $table
                 
         ])        
     ]);
-```
-
-### Custom exports
-
-If you need even more customization you can use a extend any of the base export classes, e.g.:
-
-```php
-use pxlrbt\FilamentExcel\Export;
-
-YourAction extends Export\BulkExport
-{
-    
-}
 ```
 
 ## Contributing
