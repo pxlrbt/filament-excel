@@ -1,6 +1,6 @@
 <?php
 
-namespace pxlrbt\FilamentExcel\Actions;
+namespace pxlrbt\FilamentExcel\Actions\Tables;
 
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,7 +10,7 @@ class ExportBulkAction extends BulkAction
 {
     use ExportableAction;
 
-    public static function make(string $name): static
+    public static function make(string $name = 'export'): static
     {
         return parent::make($name);
     }

@@ -15,7 +15,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
         config()->set('filesystems.disks.filament-excel', [
             'driver' => 'local',
             'root' => storage_path('app/filament-excel'),
-            'url' => config('app.url') . '/filament-excel'
+            'url' => config('app.url') . '/filament-excel',
         ]);
 
         parent::register();

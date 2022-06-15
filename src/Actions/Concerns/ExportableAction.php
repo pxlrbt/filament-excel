@@ -7,7 +7,7 @@ use Exception;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Collection;
-use pxlrbt\FilamentExcel\Export\Export;
+use pxlrbt\FilamentExcel\Export\ExcelExport;
 
 trait ExportableAction
 {
@@ -20,7 +20,7 @@ trait ExportableAction
         $this->modalWidth = 'md';
         $this->action(Closure::fromCallable([$this, 'handleExport']));
 
-        $this->exports = collect([Export::make('export')->fromTable()]);
+        $this->exports = collect([ExcelExport::make('export')->fromTable()]);
     }
 
     public function getFormSchema(): array
@@ -45,27 +45,27 @@ trait ExportableAction
                 ->disablePlaceholderSelection()
                 ->hidden($this->exports->count() <= 1)
                 ->options($this->exports->map(
-                    fn ($exportable) => $exportable->getLabel()
-                ))
+                    fn ($export) => $export->getLabel()
+                )),
         ];
     }
 
     protected function getExportFormSchemas(): Collection
     {
         return $this->exports
-            ->map(function (Export $export, $key) {
+            ->map(function (ExcelExport $export, $key) {
                 $schema = $export->getFormSchema();
 
                 return empty($schema)
                     ? null
                     : Group::make($schema)
                         ->statePath($export->getName())
-                        ->visible(fn($get) => filled($get('selected_exportable')) && $get('selected_exportable') == $key);
+                        ->visible(fn ($get) => filled($get('selected_exportable')) && $get('selected_exportable') == $key);
             })
             ->filter();
     }
 
-    protected function getSelectedExport($data): Export
+    protected function getSelectedExport($data): ExcelExport
     {
         if ($this->exports->isEmpty()) {
             throw new Exception('No export templates defined');

@@ -21,7 +21,7 @@ trait WithWriterType
         return $this->evaluate($this->writerType) ?? Excel::XLSX;
     }
 
-    protected function extractWriterType(): void
+    protected function resolveWriterType(): void
     {
         if ($writerType = data_get($this->formData, 'writer_type')) {
             if ($this->writerType instanceof Closure) {

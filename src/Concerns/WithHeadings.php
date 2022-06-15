@@ -2,6 +2,7 @@
 
 namespace pxlrbt\FilamentExcel\Concerns;
 
+use Arr;
 use Closure;
 
 trait WithHeadings
@@ -25,6 +26,16 @@ trait WithHeadings
         return $this->mergeNumericArray(
             $this->evaluate($this->autoHeadings) ?? [],
             $this->evaluate($this->headings) ?? [],
+        );
+    }
+
+    public function resolveHeadings()
+    {
+        $keys = $this->getMapping($this->getModelInstance());
+
+        return $this->mergeNumericArray(
+            $keys,
+            Arr::only($this->getHeadings(), $keys),
         );
     }
 }

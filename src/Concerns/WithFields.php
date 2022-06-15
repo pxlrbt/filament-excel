@@ -3,17 +3,15 @@
 namespace pxlrbt\FilamentExcel\Concerns;
 
 use Closure;
-use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Field;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Wizard;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Tables\Columns\Column;
+use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
+use function Livewire\invade;
 
 trait WithFields
 {
@@ -121,7 +119,6 @@ trait WithFields
         $extracted = collect();
 
         while (($component = $components->shift()) !== null) {
-
             $children = $component->getChildComponents();
 
             if (
@@ -129,7 +126,7 @@ trait WithFields
                 || $component instanceof Builder
             ) {
                 $extracted->push($component);
-                
+
                 continue;
             }
 
@@ -149,7 +146,7 @@ trait WithFields
 
     protected function createFieldMappingFromTable(): Collection
     {
-        if ($this->getResource() === null) {
+        if ($this->getLivewire() instanceof HasTable) {
             $columns = collect(invade($this->getLivewire())->getTableColumns());
         } else {
             $table = $this->getResource()::table(new Table());

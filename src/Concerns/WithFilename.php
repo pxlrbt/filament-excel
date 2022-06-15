@@ -32,7 +32,7 @@ trait WithFilename
             : $filename . '.' . $this->getDefaultExtension();
     }
 
-    protected function extractFilename(): void
+    protected function resolveFilename(): void
     {
         if ($filename = data_get($this->formData, 'filename')) {
             if ($this->filename instanceof Closure) {
