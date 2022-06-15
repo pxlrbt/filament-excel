@@ -41,7 +41,7 @@ class ExportAction extends BulkAction implements FromCollection, WithCustomChunk
 
     protected ?string $model;
 
-    protected ?Collection $records;
+    protected Collection | Closure | null $records;
 
     protected function setUp(): void
     {
