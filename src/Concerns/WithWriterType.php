@@ -24,7 +24,16 @@ trait WithWriterType
     protected function extractWriterType(): void
     {
         if ($writerType = data_get($this->formData, 'writer_type')) {
+            if ($this->writerType instanceof Closure) {
+                $writerType = $this->evaluate($this->writerType, ['writerType' => $writerType]);
+            }
+
             $this->withWriterType($writerType);
         }
+    }
+
+    protected function getDefaultExtension(): string
+    {
+        return $this->getWriterType() ? strtolower($this->getWriterType()) : 'xlsx';
     }
 }

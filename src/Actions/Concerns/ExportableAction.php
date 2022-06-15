@@ -8,36 +8,34 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Collection;
 use pxlrbt\FilamentExcel\Export\Export;
-use pxlrbt\FilamentExcel\Export\BulkExport;
 
 trait ExportableAction
 {
-    protected Collection $exportables;
+    protected Collection $exports;
 
     protected array $formData = [];
 
     protected function setUp(): void
     {
-        $this->modalWidth = 'sm';
-        $this->action(Closure::fromCallable([$this, 'export']));
+        $this->modalWidth = 'md';
+        $this->action(Closure::fromCallable([$this, 'handleExport']));
 
-        $this->exportables = collect([BulkExport::make('export')->fromTable()]);
+        $this->exports = collect([Export::make('export')->fromTable()]);
     }
-
 
     public function getFormSchema(): array
     {
-        if ($this->exportables->count() > 1 || $this->getExportableFormSchemas()->count() > 0) {
+        if ($this->exports->count() > 1 || $this->getExportFormSchemas()->count() > 0) {
             return [
-                ...$this->getSelectExportableField(),
-                ...$this->getExportableFormSchemas(),
+                ...$this->getSelectExportField(),
+                ...$this->getExportFormSchemas(),
             ];
         }
 
         return [];
     }
 
-    protected function getSelectExportableField(): array
+    protected function getSelectExportField(): array
     {
         return [
             Select::make('selected_exportable')
@@ -45,42 +43,42 @@ trait ExportableAction
                 ->reactive()
                 ->default(0)
                 ->disablePlaceholderSelection()
-                ->hidden($this->exportables->count() <= 1)
-                ->options($this->exportables->map(
+                ->hidden($this->exports->count() <= 1)
+                ->options($this->exports->map(
                     fn ($exportable) => $exportable->getLabel()
                 ))
         ];
     }
 
-    protected function getExportableFormSchemas(): Collection
+    protected function getExportFormSchemas(): Collection
     {
-        return $this->exportables
-            ->map(function (Export $exportable, $key) {
-                $schema = $exportable->getFormSchema();
+        return $this->exports
+            ->map(function (Export $export, $key) {
+                $schema = $export->getFormSchema();
 
                 return empty($schema)
                     ? null
                     : Group::make($schema)
-                        ->statePath($exportable->getName())
+                        ->statePath($export->getName())
                         ->visible(fn($get) => filled($get('selected_exportable')) && $get('selected_exportable') == $key);
             })
             ->filter();
     }
 
-    protected function getSelectedExportable($data): Export
+    protected function getSelectedExport($data): Export
     {
-        if ($this->exportables->isEmpty()) {
-            throw new Exception('No exportables defined');
+        if ($this->exports->isEmpty()) {
+            throw new Exception('No export templates defined');
         }
 
-        return $this->exportables->get(
+        return $this->exports->get(
             data_get($data, 'selected_exportable', 0)
         );
     }
 
-    public function exportables(array $exportables): static
+    public function exports(array $exports): static
     {
-        $this->exportables = collect($exportables);
+        $this->exports = collect($exports);
 
         return $this;
     }

@@ -3,11 +3,12 @@
 namespace pxlrbt\FilamentExcel\Actions;
 
 use Closure;
-use Filament\Tables\Actions\Action;
+use Filament\Pages\Actions\Action;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
+use pxlrbt\FilamentExcel\Export\BulkExport;
 use pxlrbt\FilamentExcel\Export\Export;
 
-class ExportTableAction extends Action
+class ExportPageAction extends Action
 {
     use ExportableAction;
 
@@ -19,22 +20,21 @@ class ExportTableAction extends Action
     protected function setUp(): void
     {
         $this->modalWidth = 'sm';
-        $this->button();
         $this->action(Closure::fromCallable([$this, 'handleExport']));
 
         $this->exports = collect([
-            Export::make()
-                ->fromTable()
-                ->queue()
+            Export::make()->fromForm(),
         ]);
     }
 
     public function handleExport(array $data)
     {
         $exportable = $this->getSelectedExport($data);
+        $record = $this->getLivewire()->record;
 
         return app()->call([$exportable, 'hydrate'], [
             'livewire' => $this->getLivewire(),
+            'records' => collect([$record]),
             'formData' => data_get($data, $exportable->getName()),
         ])->export();
     }

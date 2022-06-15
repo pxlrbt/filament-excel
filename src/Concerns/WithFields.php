@@ -3,10 +3,16 @@
 namespace pxlrbt\FilamentExcel\Concerns;
 
 use Closure;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Wizard;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Tables\Columns\Column;
+use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
 
 trait WithFields
@@ -15,7 +21,7 @@ trait WithFields
 
     public Closure | array $fields = [];
 
-    private function mergeNumericArray($array1, $array2)
+    protected function mergeNumericArray($array1, $array2)
     {
         $result = $array1;
 
@@ -57,11 +63,11 @@ trait WithFields
     public function fromModel(): static
     {
         $this->autoFields = function () {
-            return array_keys($this->getRecords()->first()->getAttributes());
+            return array_keys($this->getModelClass()::first()->getAttributes());
         };
 
         $this->autoHeadings = function () {
-            return array_keys($this->getRecords()->first()->getAttributes());
+            return array_keys($this->getModelClass()::first()->getAttributes());
         };
 
         return $this;
@@ -115,7 +121,17 @@ trait WithFields
         $extracted = collect();
 
         while (($component = $components->shift()) !== null) {
+
             $children = $component->getChildComponents();
+
+            if (
+                $component instanceof Repeater
+                || $component instanceof Builder
+            ) {
+                $extracted->push($component);
+                
+                continue;
+            }
 
             if (count($children) > 0) {
                 $components = $components->merge($children);

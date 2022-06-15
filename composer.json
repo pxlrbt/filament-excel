@@ -29,6 +29,7 @@
     "extra": {
         "laravel": {
             "providers": [
+                "pxlrbt\\FilamentExcel\\FilamentExcelServiceProvider"
             ]
         }
     },

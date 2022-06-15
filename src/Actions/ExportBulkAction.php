@@ -3,16 +3,21 @@
 namespace pxlrbt\FilamentExcel\Actions;
 
 use Filament\Tables\Actions\BulkAction;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 
 class ExportBulkAction extends BulkAction
 {
     use ExportableAction;
 
-    public function export(Collection $records, array $data)
+    public static function make(string $name): static
     {
-        $exportable = $this->getSelectedExportable($data);
+        return parent::make($name);
+    }
+
+    public function handleExport(Collection $records, array $data)
+    {
+        $exportable = $this->getSelectedExport($data);
 
         return app()->call([$exportable, 'hydrate'], [
             'livewire' => $this->getLivewire(),

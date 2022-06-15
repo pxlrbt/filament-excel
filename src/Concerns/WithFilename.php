@@ -18,7 +18,7 @@ trait WithFilename
 
     protected function getFilename(): ?string
     {
-        $filename = $this->evaluate($this->filename) ?? class_basename($this->getModel());
+        $filename = $this->evaluate($this->filename) ?? class_basename($this->getModelClass());
 
         return $this->ensureFilenameHasExtension($filename);
     }
@@ -35,6 +35,10 @@ trait WithFilename
     protected function extractFilename(): void
     {
         if ($filename = data_get($this->formData, 'filename')) {
+            if ($this->filename instanceof Closure) {
+                $filename = $this->evaluate($this->filename, ['filename' => $filename]);
+            }
+
             $this->withFilename($filename);
         }
     }
