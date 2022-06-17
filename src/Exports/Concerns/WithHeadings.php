@@ -13,7 +13,6 @@ trait WithHeadings
 
     protected Closure | bool $withNamesAsHeadings = false;
 
-
     public function withoutHeadings(Closure | bool $condition = true): self
     {
         $this->withoutHeadings = $condition;

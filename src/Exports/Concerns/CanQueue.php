@@ -32,7 +32,6 @@ trait CanQueue
         $this->writerType = $this->getWriterType();
         $this->livewireClass = $this->getLivewireClass();
 
-
         // Reset
         $this->generatedColumns = [];
         $this->formSchema = [];

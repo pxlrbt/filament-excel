@@ -12,7 +12,7 @@ trait WithWidths
         return $this->getMapping($this->getModelInstance())
             ->values()
             ->mapWithKeys(fn (Column $column, $key) => [
-                Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getWidth())
+                Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getWidth()),
             ])
             ->filter()
             ->toArray();

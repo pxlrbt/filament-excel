@@ -12,7 +12,7 @@ trait WithColumnFormats
         return $this->getMapping($this->getModelInstance())
             ->values()
             ->mapWithKeys(fn (Column $column, $key) => [
-                Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getFormat())
+                Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getFormat()),
             ])
             ->filter()
             ->toArray();

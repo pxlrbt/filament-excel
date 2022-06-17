@@ -57,7 +57,6 @@ class Column
         return $this->heading ?? Str::headline($this->name);
     }
 
-
     public function width(Closure | int $width): static
     {
         $this->width = $width;
