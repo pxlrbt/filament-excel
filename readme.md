@@ -11,12 +11,19 @@ Easy Excel exports for Filament.
 
 Install via Composer. This will download the package and [Laravel Excel](https://laravel-excel.com/).
 
-**Requires PHP > 8.1 and Filament > 2.0**
+**Requires PHP 8.0 and Filament 2.0**
 
 ```bash
 composer require pxlrbt/filament-excel
 ```
 
+### Laravel 9
+
+If composer require fails on Laravel 9 because of the simple-cache dependency, you will have to specify the psr/simple-cache version as ^1.0 in your composer.json to satisfy the PhpSpreadsheet dependency. You can install both at the same time as:
+
+```bash
+composer require psr/simple-cache:^1.0 pxlrbt/filament-excel
+```
 
 ## Quickstart
 
