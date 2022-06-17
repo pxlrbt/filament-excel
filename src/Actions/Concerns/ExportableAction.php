@@ -7,7 +7,7 @@ use Exception;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Collection;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 trait ExportableAction
 {
@@ -19,6 +19,7 @@ trait ExportableAction
     {
         $this->modalWidth = 'md';
         $this->action(Closure::fromCallable([$this, 'handleExport']));
+        $this->deselectRecordsAfterCompletion();
 
         $this->exports = collect([ExcelExport::make('export')->fromTable()]);
     }
@@ -39,7 +40,7 @@ trait ExportableAction
     {
         return [
             Select::make('selected_exportable')
-                ->label(__('Export template'))
+                ->label(__('Exports template'))
                 ->reactive()
                 ->default(0)
                 ->disablePlaceholderSelection()

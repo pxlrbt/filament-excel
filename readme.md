@@ -78,7 +78,7 @@ You can overwrite the default export class and also configure multiple exports w
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make('table')->fromTable(),
@@ -92,7 +92,7 @@ Many of the functions for customising the export class, accept a Closure that ge
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make('table')->withFilename(fn ($resource) => $resource::getLabel()),
@@ -112,7 +112,7 @@ The filename is set via `->withFilename()`:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     // Pass a string
@@ -129,7 +129,7 @@ You can set the file type via `->withWriterType()`:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
@@ -137,16 +137,16 @@ ExportAction::make()->exports([
 ```
 
 
-### Setting attributes
+### Defining fields
 
 When using `->formForm()`/`->formTable()`/`->formModel()` the fields are resolved from your table or form definition. You can also provide fields manually or overwrite resolved fields:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
-    ExcelExport::make()->withFields([
+    ExcelExport::make()->withColumns([
         'name', 'created_at', 'deleted_at',
     ]),
 ])
@@ -155,10 +155,9 @@ ExportAction::make()->exports([
 
 You can also include only a subset of fields (`->only()`) or exclude certain ones (`->except()`):
 
-
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make()->fromTable()->except([
@@ -171,13 +170,15 @@ ExportAction::make()->exports([
 ])
 ```
 
+When you neither pass `->only()` nor `->except()` the export will also respect the `$hidden` fields of your model, for example the `password` on the user model. You can disable this by passing an empty array `->except([])`.
+
 ### Setting headings
 
 When using `->formForm()`/`->formTable()`/`->formModel()` the headings are resolved from your table or form definition. You can also provide headings manually or overwrite resolved headings:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withHeadings([
@@ -191,9 +192,10 @@ ExportAction::make()->exports([
 ### Ask the user for input
 
 You can let the user pick a filename and writer type by using `->askForFilename()` and `->askForWriterType()`:
+
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make()
@@ -210,7 +212,7 @@ You can also use the users input inside a Closure:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make()
@@ -225,10 +227,9 @@ Exports for resources with many entries can be queued with `->queue()`. They wil
 
 The temporary file will be deleted after the first download. Files that are not downloaded will be deleted by a scheduled command after 24 hours.
 
-
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
     ExcelExport::make()->queue()
@@ -244,10 +245,10 @@ If you need even more customization you can extend the Excel class and implement
 
 ```php
     use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-    use pxlrbt\FilamentExcel\Export\ExcelExport;
+    use pxlrbt\FilamentExcel\Exports\ExcelExport;
     
     ExportAction::make('export')
-        ->label('Export Data')
+        ->label('Exports Data')
         ->exports([
             ExcelExport::make('export_1')
                 ->label('All Fields')                
@@ -262,7 +263,7 @@ If you need even more customization you can extend the Excel class and implement
             ExcelExport::make('export_2')
                 ->label('Current table')
                 ->fromTable()
-                ->withFields('created_at')
+                ->withColumns('created_at')
                 ->withHeadings(['created_at' => 'Date created')
                 ->askForFilename()
                 ->askForWriterType(),

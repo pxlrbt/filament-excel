@@ -5,11 +5,13 @@ namespace pxlrbt\FilamentExcel\Actions\Tables;
 use Closure;
 use Filament\Tables\Actions\Action;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
-use pxlrbt\FilamentExcel\Export\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ExportAction extends Action
 {
-    use ExportableAction;
+    use ExportableAction {
+        ExportableAction::setUp as parentSetUp();
+    }
 
     public static function make(string $name = 'export'): static
     {
@@ -18,14 +20,10 @@ class ExportAction extends Action
 
     protected function setUp(): void
     {
-        $this->modalWidth = 'sm';
-        $this->button();
-        $this->action(Closure::fromCallable([$this, 'handleExport']));
+        $this->parentSetUp();
 
         $this->exports = collect([
-            ExcelExport::make()
-                ->fromTable()
-                ->queue(),
+            ExcelExport::make()->fromTable()
         ]);
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace pxlrbt\FilamentExcel\Concerns;
+namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
 trait CanQueue
 {
@@ -23,19 +23,20 @@ trait CanQueue
         // Evaluate
         $this->except = $this->getExcept();
         $this->only = $this->getOnly();
-        $this->fields = $this->getFields();
+        $this->columns = $this->getColumns();
 
         $this->model = $this->getModelClass();
+        $this->headings = $this->getHeadings();
+
         $this->filename = $this->getFilename();
         $this->writerType = $this->getWriterType();
+        $this->livewireClass = $this->getLivewireClass();
 
-        $this->headings = $this->resolveHeadings();
 
         // Reset
-        $this->autoHeadings = [];
-        $this->autoFields = [];
+        $this->generatedColumns = [];
+        $this->formSchema = [];
 
         $this->livewire = null;
-        $this->formSchema = [];
     }
 }

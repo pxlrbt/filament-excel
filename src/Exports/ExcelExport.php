@@ -1,6 +1,6 @@
 <?php
 
-namespace pxlrbt\FilamentExcel\Export;
+namespace pxlrbt\FilamentExcel\Exports;
 
 use Filament\Facades\Filament;
 use Filament\Support\Concerns\EvaluatesClosures;
@@ -11,22 +11,28 @@ use Illuminate\Support\Str;
 use Livewire\Component;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
-use pxlrbt\FilamentExcel\Concerns\CanQueue;
-use pxlrbt\FilamentExcel\Concerns\Except;
-use pxlrbt\FilamentExcel\Concerns\Only;
-use pxlrbt\FilamentExcel\Concerns\WithChunkCount;
-use pxlrbt\FilamentExcel\Concerns\WithFields;
-use pxlrbt\FilamentExcel\Concerns\WithFilename;
-use pxlrbt\FilamentExcel\Concerns\WithHeadings;
-use pxlrbt\FilamentExcel\Concerns\WithMapping;
-use pxlrbt\FilamentExcel\Concerns\WithWriterType;
+use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
+use pxlrbt\FilamentExcel\Exports\Concerns\CanQueue;
+use pxlrbt\FilamentExcel\Exports\Concerns\Except;
+use pxlrbt\FilamentExcel\Exports\Concerns\Only;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithChunkCount;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithColumnFormats;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithColumns;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithFilename;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithHeadings;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithMapping;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
-use pxlrbt\FilamentExcel\SendCompletedNotificationJob;
 
-class ExcelExport implements HasMapping, HasHeadings, FromQuery
+class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize, WithColumnWidths, WithColumnFormatting, WithCustomChunkSize
 {
     use Exportable, CanQueue  {
         Exportable::download as downloadExport;
@@ -40,11 +46,13 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
     use Except;
     use Only;
     use WithChunkCount;
-    use WithFields;
+    use WithColumns;
     use WithFilename;
     use WithHeadings;
     use WithWriterType;
     use WithMapping;
+    use WithWidths;
+    use WithColumnFormats;
 
     protected string $name;
 
@@ -52,13 +60,15 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
 
     protected ?Component $livewire = null;
 
+    protected ?string $livewireClass = null;
+
     protected array $formSchema = [];
 
     protected ?array $formData;
 
-    public ?string $model = null;
+    protected ?string $model = null;
 
-    public ?string $modelKeyName;
+    protected ?string $modelKeyName;
 
     protected array $recordIds = [];
 
@@ -102,9 +112,14 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
         return $this->formSchema;
     }
 
-    public function getLivewire(): Component
+    public function getLivewire(): ?Component
     {
         return $this->livewire;
+    }
+
+    public function getLivewireClass(): ?string
+    {
+        return $this->livewireClass ??= get_class($this->livewire);
     }
 
     public function getRecordIds(): array
@@ -117,7 +132,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
         return $this->query()->first();
     }
 
-    protected function getResource(): ?string
+    protected function getResourceClass(): ?string
     {
         if (isset($this->resource)) {
             return $this->resource;
@@ -125,7 +140,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
 
         $livewire = $this->getLivewire();
 
-        if (! method_exists($livewire, 'getResource')) {
+        if ($livewire === null || ! method_exists($livewire, 'getResource')) {
             return null;
         }
 
@@ -138,7 +153,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
             return $this->model;
         }
 
-        if (($resource = $this->getResource()) !== null) {
+        if (($resource = $this->getResourceClass()) !== null) {
             $model = $resource::getModel();
         } elseif (($livewire = $this->getLivewire()) instanceof HasTable) {
             $model = $livewire->getTableModel();
@@ -149,9 +164,11 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
 
     public function hydrate($livewire = null, $records = null, $formData = null): static
     {
+
         $this->livewire = $livewire;
         $this->modelKeyName = $this->getModelInstance()->getKeyName();
-        $this->recordIds = $this->getModelInstance()->pluck($this->modelKeyName)->toArray() ?? [];
+        $this->recordIds = $records?->pluck($this->modelKeyName)->toArray() ?? [];
+
         $this->formData = $formData;
 
         return $this;
@@ -169,36 +186,33 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery
         $this->prepareQueuedExport();
 
         $filename = Str::uuid() . '-' . $this->getFilename();
+        $userId = auth()->id();
 
         $this
             ->queueExport($filename, 'filament-excel', $this->getWriterType())
-            ->chain([new SendCompletedNotificationJob(auth()->id(), $filename)]);
+            ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId)]);
 
-        Filament::notify('success', __('Export queued'));
+        Filament::notify('success', __('Exports queued'));
     }
 
     public function query(): Builder
     {
         return $this->getModelClass()::query()
             ->when(
-                filled($this->recordIds),
+                $this->recordIds,
                 fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
             );
-    }
-
-    public function headings(): array
-    {
-        return $this->resolveHeadings();
     }
 
     protected function getDefaultEvaluationParameters(): array
     {
         return [
             'livewire' => $this->getLivewire(),
-            'resource' => $this->getResource(),
+            'livewireClass' => $this->getLivewireClass(),
+            'modelClass' => $this->getModelClass(),
+            'resourceClass' => $this->getResourceClass(),
             'recordIds' => $this->getRecordIds(),
             'query' => $this->query(),
-            'model' => $this->getModelClass(),
         ];
     }
 }

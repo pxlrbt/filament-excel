@@ -1,6 +1,6 @@
 <?php
 
-namespace pxlrbt\FilamentExcel\Concerns;
+namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
 use Closure;
 use Maatwebsite\Excel\Excel;
