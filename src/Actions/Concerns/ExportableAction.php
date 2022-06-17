@@ -40,7 +40,7 @@ trait ExportableAction
     {
         return [
             Select::make('selected_exportable')
-                ->label(__('Exports template'))
+                ->label(__('Export template'))
                 ->reactive()
                 ->default(0)
                 ->disablePlaceholderSelection()

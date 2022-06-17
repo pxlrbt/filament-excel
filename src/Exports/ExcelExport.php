@@ -21,7 +21,7 @@ use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanQueue;
 use pxlrbt\FilamentExcel\Exports\Concerns\Except;
 use pxlrbt\FilamentExcel\Exports\Concerns\Only;
-use pxlrbt\FilamentExcel\Exports\Concerns\WithChunkCount;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithChunkSize;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumnFormats;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumns;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithFilename;
@@ -45,7 +45,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     use AskForWriterType;
     use Except;
     use Only;
-    use WithChunkCount;
+    use WithChunkSize;
     use WithColumns;
     use WithFilename;
     use WithHeadings;
@@ -209,8 +209,8 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         return [
             'livewire' => $this->getLivewire(),
             'livewireClass' => $this->getLivewireClass(),
-            'modelClass' => $this->getModelClass(),
-            'resourceClass' => $this->getResourceClass(),
+            'model' => $this->getModelClass(),
+            'resource' => $this->getResourceClass(),
             'recordIds' => $this->getRecordIds(),
             'query' => $this->query(),
         ];

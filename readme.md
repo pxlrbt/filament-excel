@@ -100,13 +100,14 @@ ExportAction::make()->exports([
 ```
 
 The following arguments are available:
-- `$livewire`: Livewire component
+- `$livewire`: Livewire component (not available for queued exports)
+- `$livewireClass`: Livewire component class
 - `$resource`: Resource class
+- `$model`: Model class
 - `$recordIds`: IDs of selected records (Bulk Action)
 - `$query`: The builder instance 
-- `$model`: Model class
 
-### Setting the filename
+### Filename
 
 The filename is set via `->withFilename()`:
 
@@ -123,7 +124,7 @@ ExportAction::make()->exports([
 ])
 ```
 
-### Setting the file type
+### Export types
 
 You can set the file type via `->withWriterType()`:
 
@@ -137,23 +138,25 @@ ExportAction::make()->exports([
 ```
 
 
-### Defining fields
+### Defining columns
 
-When using `->formForm()`/`->formTable()`/`->formModel()` the fields are resolved from your table or form definition. You can also provide fields manually or overwrite resolved fields:
+When using `->formForm()`/`->formTable()`/`->formModel()` the columns are resolved from your table or form definition. You can also provide columns manually, append columns or overwrite generated columns.
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
-        'name', 'created_at', 'deleted_at',
+        Column::make('name'),
+        Column::make('created_at'),
+        Column::make('deleted_at'),
     ]),
 ])
 ```
 
-
-You can also include only a subset of fields (`->only()`) or exclude certain ones (`->except()`):
+You can also include only a subset of columns (`->only()`) or exclude certain ones (`->except()`):
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
@@ -170,26 +173,75 @@ ExportAction::make()->exports([
 ])
 ```
 
-When you neither pass `->only()` nor `->except()` the export will also respect the `$hidden` fields of your model, for example the `password` on the user model. You can disable this by passing an empty array `->except([])`.
+When you neither pass `->only()` nor `->except()` the export will also respect the `$hidden` attributes of your model, for example the `password` on the user model. You can disable this by passing an empty array `->except([])`.
 
-### Setting headings
+### Headings
 
-When using `->formForm()`/`->formTable()`/`->formModel()` the headings are resolved from your table or form definition. You can also provide headings manually or overwrite resolved headings:
+When using `->formForm()`/`->formTable()`/`->formModel()` the headings are resolved from your table or form definition. You can also overwrite headings:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
-    ExcelExport::make()->withHeadings([
-        'name' => 'Name',
-        'email' => 'E-Mail',
-        'created_at' => 'Creation Date'
+    ExcelExport::make()->withColumns([
+        Column::make('name')->heading('User name'),
+        Column::make('email')->heading('Email address'),
+        Column::make('created_at')->heading('Creation date'),
     ]),
 ])
 ```
 
-### Ask the user for input
+If you want to use the column names and don't like the headings auto generated you can use `->withNamesAsHeadings()`. To disable headings entirely you can append `->withoutHeadings()`
+
+### Formatting
+
+Every column can be formatted by providing a Closure. Additional to the default parameters you get access to `$state` and `$row`.
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->withColumns([
+        Column::make('email')
+            ->formatStateUsing(fn ($state) => str_replace('@', '[at]', $state)),
+            
+        Column::make('name')
+            ->formatStateUsing(fn ($row) => $row['first_name'] . ' ' . $row['last_name']),
+    ]),
+])
+```
+
+Columns are auto-scaled to fit the content. If you want to overwrite this with a custom column width you can do so:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->withColumns([
+        Column::make('email')->width(10)
+    ]),
+])
+```
+The underlying package PhpSpreadsheet provides various options for Excel column formatting. Inspect the `NumberFormat` list for the full list.
+
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat
+
+ExportAction::make()->exports([
+    ExcelExport::make()->withColumns([
+        Column::make('currecy')->format(NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE)
+    ]),
+])
+```
+
+
+### User input
 
 You can let the user pick a filename and writer type by using `->askForFilename()` and `->askForWriterType()`:
 
@@ -200,10 +252,6 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 ExportAction::make()->exports([
     ExcelExport::make()
         ->askForFilename()
-## Custom exports
-
-If you need even more customization you can extend the Excel class and implement your own logic.
-
         ->askForWriterType()
 ])
 ```
@@ -223,7 +271,7 @@ ExportAction::make()->exports([
 
 ### Queued exports
 
-Exports for resources with many entries can be queued with `->queue()`. They will be processed in a background job and the user will be notified with a notification on the next page load (or when Livewire is polling). 
+Exports for resources with many entries can take some time and therefore can be queued with `->queue()`. They will be processed in background jobs and the user will be notified with a notification on the next page load (or when Livewire is polling). 
 
 The temporary file will be deleted after the first download. Files that are not downloaded will be deleted by a scheduled command after 24 hours.
 
@@ -236,46 +284,39 @@ ExportAction::make()->exports([
 ])
 ```
 
-## Custom exports
-
-If you need even more customization you can extend the Excel class and implement your own logic.
-
-
-## Example
+The size of exported records per Job can be adjusted by using `->chunkSize()`:
 
 ```php
-    use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-    use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->queue()->chunkSize(100)
+])
+```
+
+
+## Custom exports
+
+If you need even more customization or want to clean up your resources by separating the export code, you can extend the ExcelExport class and configure it using `setUp()`:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
+
+class CustomExport extends ExcelExport
+{
     
-    ExportAction::make('export')
-        ->label('Exports Data')
-        ->exports([
-            ExcelExport::make('export_1')
-                ->label('All Fields')                
-                ->fromModel()
-                ->withHeadings([
-                    'id' => 'ID',
-                    'created_at' => 'Date created'
-                ])      
-                ->except('password')
-                ->withFilename(fn ($resource) => date('Y-m-d') . '-' . $resource::getLabel()),
-                
-            ExcelExport::make('export_2')
-                ->label('Current table')
-                ->fromTable()
-                ->withColumns('created_at')
-                ->withHeadings(['created_at' => 'Date created')
-                ->askForFilename()
-                ->askForWriterType(),
-                
-            ExcelExport::make('export_3')
-                ->label('Resource form')
-                ->fromForm()
-                ->askForFilename(date('Y-m-d') . '-export')
-                ->askForWriterType(Maatwebsite\Excel\Excel::CSV),
-                
-        ])        
-    ]);
+    public function setUp()
+    {
+        $this->withFilename('custom_export');
+        $this->withColumns([
+            Column::make('name'),
+            Column::make('email'),
+        ]);
+    }
+}
 ```
 
 ## Contributing
