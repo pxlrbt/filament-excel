@@ -1,3 +1,5 @@
+![header](./.github/resources/header.png)
+
 # Filament Excel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/pxlrbt/filament-excel.svg?include_prereleases)](https://packagist.org/packages/pxlrbt/filament-excel)
@@ -5,7 +7,9 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pxlrbt/filament-excel/Code%20Style?label=code%20style)
 [![Total Downloads](https://img.shields.io/packagist/dt/pxlrbt/filament-excel.svg)](https://packagist.org/packages/pxlrbt/filament-excel)
 
-Easy Excel exports for Filament.
+Easily configure your Excel exports in Filament via a bulk or page action.
+
+/.github/resources/demo.mp4
 
 ## Installation
 
