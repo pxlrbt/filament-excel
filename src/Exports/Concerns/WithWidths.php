@@ -7,7 +7,14 @@ use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithWidths
 {
+    protected ?array $columnWidths = null;
+
     public function columnWidths(): array
+    {
+        return $this->getColumnWidths();
+    }
+
+    public function getColumnWidths(): array
     {
         return $this->getMapping($this->getModelInstance())
             ->values()

@@ -30,6 +30,8 @@ trait CanQueue
 
         $this->filename = $this->getFilename();
         $this->writerType = $this->getWriterType();
+        $this->columnFormats = $this->getColumnFormats();
+        $this->columnWidths = $this->getColumnWidths();
         $this->livewireClass = $this->getLivewireClass();
 
         // Reset
