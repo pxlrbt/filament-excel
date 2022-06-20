@@ -70,7 +70,8 @@ trait WithColumns
                 : collect();
 
             return collect($this->getModelClass()::first()->getAttributes())
-                ->map(fn ($attribute, $key) => $mapping->has($key)
+                ->map(
+                    fn ($attribute, $key) => $mapping->has($key)
                     ? Column::make($key)->heading($mapping->get($key)->getHeading())
                     : Column::make($key)
                 )

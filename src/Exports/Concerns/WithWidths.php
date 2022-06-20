@@ -11,12 +11,12 @@ trait WithWidths
 
     public function columnWidths(): array
     {
-       return $this->getColumnWidths();
+        return $this->getColumnWidths();
     }
 
     public function getColumnWidths(): array
     {
-         return $this->getMapping($this->getModelInstance())
+        return $this->getMapping($this->getModelInstance())
             ->values()
             ->mapWithKeys(fn (Column $column, $key) => [
                 Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getWidth()),
