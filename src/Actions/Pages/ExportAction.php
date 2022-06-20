@@ -2,7 +2,6 @@
 
 namespace pxlrbt\FilamentExcel\Actions\Pages;
 
-use Closure;
 use Filament\Pages\Actions\Action;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;

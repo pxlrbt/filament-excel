@@ -2,7 +2,6 @@
 
 namespace pxlrbt\FilamentExcel\Actions\Tables;
 
-use Closure;
 use Filament\Tables\Actions\Action;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -23,7 +22,7 @@ class ExportAction extends Action
         $this->parentSetUp();
 
         $this->exports = collect([
-            ExcelExport::make()->fromTable()
+            ExcelExport::make()->fromTable(),
         ]);
     }
 

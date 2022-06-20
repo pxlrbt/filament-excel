@@ -2,7 +2,6 @@
 
 namespace pxlrbt\FilamentExcel\Actions\Tables;
 
-use Filament\Facades\Filament;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
