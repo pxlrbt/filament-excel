@@ -65,7 +65,9 @@ trait WithColumns
     public function fromModel(): static
     {
         $this->generatedColumns = function () {
-            $mapping = $this->createFieldMappingFromForm();
+            $mapping = $this->getResourceClass() !== null
+                ? $this->createFieldMappingFromForm()
+                : collect();
 
             return collect($this->getModelClass()::first()->getAttributes())
                 ->map(fn ($attribute, $key) => $mapping->has($key)

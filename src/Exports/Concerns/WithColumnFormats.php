@@ -7,9 +7,16 @@ use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithColumnFormats
 {
+    protected ?array $columnFormats = null;
+
     public function columnFormats(): array
     {
-        return $this->getMapping($this->getModelInstance())
+        return $this->getColumnFormats();
+    }
+
+    public function getColumnFormats(): array
+    {
+        return $this->columnFormat ??= $this->getMapping($this->getModelInstance())
             ->values()
             ->mapWithKeys(fn (Column $column, $key) => [
                 Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getFormat()),
