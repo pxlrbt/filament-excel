@@ -6,15 +6,13 @@ use Closure;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
 use Filament\Resources\Form;
-use Filament\Tables;
 use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
-
-use pxlrbt\FilamentExcel\Columns\Column;
-
 use function Livewire\invade;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithColumns
 {
@@ -59,7 +57,7 @@ trait WithColumns
 
     public function fromForm(): static
     {
-        $this->generatedColumns =  fn () => ($this->cachedMap ??= $this->createFieldMappingFromForm())->toArray();
+        $this->generatedColumns = fn () => ($this->cachedMap ??= $this->createFieldMappingFromForm())->toArray();
 
         return $this;
     }
@@ -102,8 +100,8 @@ trait WithColumns
 
         return $extracted
             ->filter(fn ($field) => $field instanceof Field)
-            ->mapWithKeys(fn (Field $field) =>
-                [$field->getName() => Column::make($field->getName())->heading($field->getLabel())]
+            ->mapWithKeys(
+                fn (Field $field) => [$field->getName() => Column::make($field->getName())->heading($field->getLabel())]
             );
     }
 
@@ -118,7 +116,7 @@ trait WithColumns
 
         return $columns->mapWithKeys(
             fn (Tables\Columns\Column $column) => [
-                $column->getName() => Column::make($column->getName())->heading($column->getLabel())
+                $column->getName() => Column::make($column->getName())->heading($column->getLabel()),
             ]
         );
     }

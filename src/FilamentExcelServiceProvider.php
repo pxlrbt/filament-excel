@@ -62,6 +62,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
             );
         }
     }
+
     public function cacheExportFinishedNotification(ExportFinishedEvent $event)
     {
         if ($event->userId === null) {
