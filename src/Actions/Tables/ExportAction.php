@@ -10,7 +10,7 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 class ExportAction extends Action
 {
     use ExportableAction {
-        ExportableAction::setUp as parentSetUp();
+        ExportableAction::setUp as parentSetUp;
     }
 
     public static function make(string $name = 'export'): static

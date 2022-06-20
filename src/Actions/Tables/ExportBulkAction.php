@@ -2,17 +2,27 @@
 
 namespace pxlrbt\FilamentExcel\Actions\Tables;
 
+use Filament\Facades\Filament;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 
 class ExportBulkAction extends BulkAction
 {
-    use ExportableAction;
+    use ExportableAction {
+        ExportableAction::setUp as parentSetUp;
+    }
 
     public static function make(string $name = 'export'): static
     {
         return parent::make($name);
+    }
+
+    protected function setUp(): void
+    {
+        $this->parentSetUp();
+
+        $this->deselectRecordsAfterCompletion();
     }
 
     public function handleExport(Collection $records, array $data)

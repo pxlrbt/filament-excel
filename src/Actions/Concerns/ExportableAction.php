@@ -19,7 +19,6 @@ trait ExportableAction
     {
         $this->modalWidth = 'md';
         $this->action(Closure::fromCallable([$this, 'handleExport']));
-        $this->deselectRecordsAfterCompletion();
 
         $this->exports = collect([ExcelExport::make('export')->fromTable()]);
     }
