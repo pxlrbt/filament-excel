@@ -38,20 +38,20 @@ trait WithMapping
     /**
      * @param  Model|mixed  $row
      */
-    public function map($row): array
+    public function map($record): array
     {
         $result = [];
-        $columns = $this->getMapping($row);
+        $columns = $this->getMapping($record);
 
-        if ($row instanceof Model) {
-            $row->setHidden([]);
+        if ($record instanceof Model) {
+            $record->setHidden([]);
         }
 
         foreach ($columns as $column) {
             $key = $column->getName();
-            $entry = data_get($row, $key);
+            $entry = data_get($record, $key);
 
-            $entry = $this->evaluate($column->formatStateUsing->getClosure(), ['state' => $entry, 'row' => $row]);
+            $entry = $this->evaluate($column->formatStateUsing->getClosure(), ['state' => $entry, 'record' => $record]);
 
             if (is_object($entry)) {
                 $entry = match (true) {

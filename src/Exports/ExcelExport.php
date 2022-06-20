@@ -165,7 +165,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     public function hydrate($livewire = null, $records = null, $formData = null): static
     {
         $this->livewire = $livewire;
-        $this->modelKeyName = $this->getModelInstance()->getKeyName();
+        $this->modelKeyName = $this->getModelInstance()->getQualifiedKeyName();
         $this->recordIds = $records?->pluck($this->modelKeyName)->toArray() ?? [];
 
         $this->formData = $formData;

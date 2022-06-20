@@ -209,7 +209,7 @@ If you want to use the column names and don't like the headings auto generated y
 
 ### Formatting
 
-Every column can be formatted by providing a Closure. Additional to the default parameters you get access to `$state` and `$row`.
+Every column can be formatted by providing a Closure. Additional to the default parameters you get access to `$state` and `$record`.
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
@@ -221,7 +221,7 @@ ExportAction::make()->exports([
             ->formatStateUsing(fn ($state) => str_replace('@', '[at]', $state)),
             
         Column::make('name')
-            ->formatStateUsing(fn ($row) => $row['first_name'] . ' ' . $row['last_name']),
+            ->formatStateUsing(fn ($record) => $record->locations->pluck('name')->join(','),
     ]),
 ])
 ```

@@ -64,9 +64,16 @@ trait WithColumns
 
     public function fromModel(): static
     {
-        $this->generatedColumns = fn () => collect($this->getModelClass()::first()->getAttributes())
-                ->map(fn ($attribute, $key) => Column::make($key))
+        $this->generatedColumns = function () {
+            $mapping = $this->createFieldMappingFromForm();
+
+            return collect($this->getModelClass()::first()->getAttributes())
+                ->map(fn ($attribute, $key) => $mapping->has($key)
+                    ? Column::make($key)->heading($mapping->get($key)->getHeading())
+                    : Column::make($key)
+                )
                 ->toArray();
+        };
 
         return $this;
     }
