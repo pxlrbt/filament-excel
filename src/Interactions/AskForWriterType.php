@@ -18,7 +18,8 @@ trait AskForWriterType
         $field = Select::make('writer_type')
             ->label($label ?? __('Type'))
             ->options($options)
-            ->default($default ?? '');
+            ->default($default ?? '')
+            ->required();
 
         if (is_callable($callback)) {
             $callback($field);

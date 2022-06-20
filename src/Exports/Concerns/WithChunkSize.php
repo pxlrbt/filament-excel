@@ -1,8 +1,8 @@
 <?php
 
-namespace pxlrbt\FilamentExcel\Concerns;
+namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
-trait WithChunkCount
+trait WithChunkSize
 {
     protected int $chunkSize = 100;
 
