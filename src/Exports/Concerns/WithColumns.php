@@ -11,7 +11,9 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
+
 use function Livewire\invade;
+
 use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithColumns
