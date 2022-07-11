@@ -12,7 +12,7 @@ class ExportBulkAction extends BulkAction
         ExportableAction::setUp as parentSetUp;
     }
 
-    public static function make(string $name = 'export'): static
+    public static function make(?string $name = 'export'): static
     {
         return parent::make($name);
     }
