@@ -31,6 +31,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
+use function Livewire\invade;
 
 class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize, WithColumnWidths, WithColumnFormatting, WithCustomChunkSize
 {
@@ -196,7 +197,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function query(): Builder
     {
-        return $this->getModelClass()::query()
+        return invade($this->livewire)->getTableQuery()
             ->when(
                 $this->recordIds,
                 fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
