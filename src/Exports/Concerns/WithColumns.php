@@ -24,6 +24,8 @@ trait WithColumns
 
     protected ?Collection $cachedMap = null;
 
+    protected ?string $columnsSource = null;
+
     public function withColumns(Closure | array | string | null $columns = null): self
     {
         if (is_callable($columns)) {
@@ -54,12 +56,16 @@ trait WithColumns
     {
         $this->generatedColumns = fn () => ($this->cachedMap ??= $this->createFieldMappingFromTable())->toArray();
 
+        $this->columnsSource = 'table';
+
         return $this;
     }
 
     public function fromForm(): static
     {
         $this->generatedColumns = fn () => ($this->cachedMap ??= $this->createFieldMappingFromForm())->toArray();
+
+        $this->columnsSource = 'form';
 
         return $this;
     }
@@ -79,6 +85,8 @@ trait WithColumns
                 )
                 ->toArray();
         };
+
+        $this->columnsSource = 'model';
 
         return $this;
     }

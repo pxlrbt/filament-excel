@@ -197,7 +197,13 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function query(): Builder
     {
-        return invade($this->livewire)->getTableQuery()
+        if ($this->columnsSource === 'table') {
+            $baseQuery = invade($this->livewire)->getTableQuery();
+        } else {
+            $baseQuery = $this->getModelClass()::query();
+        }
+
+        return $baseQuery
             ->when(
                 $this->recordIds,
                 fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
