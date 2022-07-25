@@ -136,7 +136,9 @@ trait WithColumns
 
         return $columns->mapWithKeys(
             fn (Tables\Columns\Column $column) => [
-                $column->getName() => Column::make($column->getName())->heading($column->getLabel()),
+                $column->getName() => Column::make($column->getName())
+                    ->heading($column->getLabel())
+                    ->formatStateUsing(invade($column)->formatStateUsing ?? fn ($state) => $state),
             ]
         );
     }
