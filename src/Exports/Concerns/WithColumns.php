@@ -12,7 +12,6 @@ use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
 
-use Throwable;
 use function Livewire\invade;
 
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -156,7 +155,7 @@ trait WithColumns
                 rescue(fn () => $exportColumn->formatStateUsing($invadedColumn->formatStateUsing), report: false);
 
                 return [
-                    $column->getName() => $exportColumn
+                    $column->getName() => $exportColumn,
                 ];
             });
     }
