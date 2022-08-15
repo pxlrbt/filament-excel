@@ -93,16 +93,16 @@ class Column
         return $this->format;
     }
 
-    public function getStateUsing(callable $callback): static
+    public function getStateUsing(?callable $callback): static
     {
-        $this->getStateUsing = new SerializableClosure($callback);
+        $this->getStateUsing = $callback ? new SerializableClosure($callback) : null;
 
         return $this;
     }
 
-    public function formatStateUsing(callable $callback): static
+    public function formatStateUsing(?callable $callback): static
     {
-        $this->formatStateUsing = new SerializableClosure($callback);
+        $this->formatStateUsing = $callback ? new SerializableClosure($callback) : null;
 
         return $this;
     }
