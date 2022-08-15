@@ -11,7 +11,9 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
+
 use function Livewire\invade;
+
 use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithColumns
@@ -126,7 +128,9 @@ trait WithColumns
 
     protected function createFieldMappingFromTable(): Collection
     {
-        if ($this->getLivewire() instanceof HasTable) {
+        $livewire = $this->getLivewire();
+
+        if ($livewire instanceof HasTable) {
             $columns = collect(invade($this->getLivewire())->getTableColumns());
         } else {
             $table = $this->getResourceClass()::table(new Table());
@@ -134,6 +138,12 @@ trait WithColumns
         }
 
         return $columns
+            ->when(
+                $livewire->hasToggleableTableColumns(),
+                fn ($collection) => $collection->reject(
+                    fn (Tables\Columns\Column $column) => $livewire->isTableColumnToggledHidden($column->getName())
+                )
+            )
             ->mapWithKeys(function (Tables\Columns\Column $column) {
                 $invadedColumn = invade($column);
 
