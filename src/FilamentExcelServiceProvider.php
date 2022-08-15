@@ -30,6 +30,8 @@ class FilamentExcelServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
+        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'filament-excel');
+
         $this->commands([PruneExportsCommand::class]);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
@@ -57,13 +59,13 @@ class FilamentExcelServiceProvider extends ServiceProvider
             );
 
             Notification::make()
-                ->title(__('Export finished'))
-                ->body(__('Your file is ready for download.'))
+                ->title(__('filament-excel::notifications.download_ready.title'))
+                ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
                 ->icon('heroicon-o-download')
                 ->actions([
                     Action::make('download')
-                        ->label(__('Download'))
+                        ->label(__('filament-excel::notifications.download_ready.download'))
                         ->url($url, shouldOpenInNewTab: true)
                         ->button()
                         ->close(),
