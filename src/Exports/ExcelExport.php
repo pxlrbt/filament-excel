@@ -9,8 +9,9 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
-use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
+
 use function Livewire\invade;
+
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -20,6 +21,7 @@ use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
+use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanQueue;
 use pxlrbt\FilamentExcel\Exports\Concerns\Except;
 use pxlrbt\FilamentExcel\Exports\Concerns\Only;
