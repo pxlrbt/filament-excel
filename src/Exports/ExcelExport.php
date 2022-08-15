@@ -9,6 +9,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use function Livewire\invade;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -196,7 +197,13 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function query(): Builder
     {
-        return $this->getModelClass()::query()
+        if ($this->columnsSource === 'table') {
+            $baseQuery = invade($this->livewire)->getTableQuery();
+        } else {
+            $baseQuery = $this->getModelClass()::query();
+        }
+
+        return $baseQuery
             ->when(
                 $this->recordIds,
                 fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)

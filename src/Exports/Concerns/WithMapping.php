@@ -49,19 +49,35 @@ trait WithMapping
 
         foreach ($columns as $column) {
             $key = $column->getName();
-            $entry = data_get($record, $key);
+            $state = data_get($record, $key);
 
-            $entry = $this->evaluate($column->formatStateUsing->getClosure(), ['state' => $entry, 'record' => $record]);
+            $state = $column->getStateUsing === null
+                ? $state
+                : $this->evaluate($column->getStateUsing->getClosure(), [
+                    'column' => $column->tableColumn,
+                    'livewire' => $this->getLivewire(),
+                    'record' => $record,
+                    'state' => $state,
+                ]);
 
-            if (is_object($entry)) {
-                $entry = match (true) {
-                    method_exists($entry, 'toString') => $entry->toString(),
-                    method_exists($entry, '__toString') => $entry->__toString(),
-                    function_exists('enum_exists') && $entry instanceof UnitEnum => $entry->value,
+            $state = $column->formatStateUsing === null
+                ? $state
+                : $this->evaluate($column->formatStateUsing->getClosure(), [
+                    'column' => $column->tableColumn,
+                    'livewire' => $this->getLivewire(),
+                    'record' => $record,
+                    'state' => $state,
+                ]);
+
+            if (is_object($state)) {
+                $state = match (true) {
+                    method_exists($state, 'toString') => $state->toString(),
+                    method_exists($state, '__toString') => $state->__toString(),
+                    function_exists('enum_exists') && $state instanceof UnitEnum => $state->value,
                 };
             }
 
-            $result[$key] = $entry;
+            $result[$key] = $state;
         }
 
         return $result;
