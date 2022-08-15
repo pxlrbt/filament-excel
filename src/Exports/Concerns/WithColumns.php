@@ -133,12 +133,25 @@ trait WithColumns
             $columns = collect($table->getColumns());
         }
 
-        return $columns->mapWithKeys(fn (Tables\Columns\Column $column) => [
-            $column->getName() => Column::make($column->getName())
-                ->heading($column->getLabel())
-                ->tableColumn($column)
-                ->getStateUsing(invade($column)->getStateUsing)
-                ->formatStateUsing(invade($column)->formatStateUsing),
-        ]);
+        return $columns
+            ->mapWithKeys(function (Tables\Columns\Column $column) {
+                $invadedColumn = invade($column);
+
+                return [
+                    $column->getName() => Column::make($column->getName())
+                        ->heading($column->getLabel())
+                        ->tableColumn($column)
+                        ->getStateUsing(
+                            isset($invadedColumn->getStateUsing)
+                                ? $invadedColumn->getStateUsing
+                                : null
+                        )
+                        ->formatStateUsing(
+                            isset($invadedColumn->formatStateUSing)
+                                ? $invadedColumn->formatStateUSing
+                                : null
+                        ),
+                ];
+            });
     }
 }
