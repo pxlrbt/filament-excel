@@ -21,6 +21,9 @@ class ExportAction extends Action
     {
         $this->parentSetUp();
 
+        $this->button();
+        $this->icon('heroicon-o-download');
+
         $this->exports = collect([
             ExcelExport::make()->fromForm(),
         ]);
