@@ -4,9 +4,11 @@ namespace pxlrbt\FilamentExcel;
 
 use Closure;
 use Filament\Facades\Filament;
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
@@ -48,18 +50,26 @@ class FilamentExcelServiceProvider extends ServiceProvider
         }
 
         foreach ($exports as $export) {
-
-            // $url = URL::temporarySignedRoute(
-            //     'filament-excel-download',
-            //     now()->addHours(24),
-            //     ['path' => $export['filename']]
-            // );
-
-            Filament::notify(
-                'success',
-                new HtmlString(__('Export finished: ' . $export['filename']))
-                // new HtmlString(__('Export finished. ') . '<a target="_blank" style="text-decoration: underline" href="' . $url . '">' . __('Download') . '</a>';)
+            $url = URL::temporarySignedRoute(
+                'filament-excel-download',
+                now()->addHours(24),
+                ['path' => $export['filename']]
             );
+
+            Notification::make()
+                ->title(__('Export finished'))
+                ->body(__('Your file is ready for download.'))
+                ->success()
+                ->icon('heroicon-o-download')
+                ->actions([
+                    Action::make('download')
+                        ->label(__('Download'))
+                        ->url($url, shouldOpenInNewTab: true)
+                        ->button()
+                        ->close(),
+                ])
+                ->persistent()
+                ->send();
         }
     }
 
