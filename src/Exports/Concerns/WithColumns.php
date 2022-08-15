@@ -120,9 +120,10 @@ trait WithColumns
 
         return $extracted
             ->filter(fn ($field) => $field instanceof Field)
-            ->mapWithKeys(
-                fn (Field $field) => [$field->getName() => Column::make($field->getName())->heading($field->getLabel())]
-            );
+            ->mapWithKeys(fn (Field $field) => [
+                $field->getName() => Column::make($field->getName())
+                    ->heading($field->getLabel()),
+            ]);
     }
 
     protected function createFieldMappingFromTable(): Collection
@@ -134,12 +135,12 @@ trait WithColumns
             $columns = collect($table->getColumns());
         }
 
-        return $columns->mapWithKeys(
-            fn (Tables\Columns\Column $column) => [
-                $column->getName() => Column::make($column->getName())
-                    ->heading($column->getLabel())
-                    ->formatStateUsing(invade($column)->formatStateUsing ?? fn ($state) => $state),
-            ]
-        );
+        return $columns->mapWithKeys(fn (Tables\Columns\Column $column) => [
+            $column->getName() => Column::make($column->getName())
+                ->heading($column->getLabel())
+                ->tableColumn($column)
+                ->getStateUsing(invade($column)->getStateUsing)
+                ->formatStateUsing(invade($column)->formatStateUsing),
+        ]);
     }
 }
