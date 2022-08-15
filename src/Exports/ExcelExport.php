@@ -9,6 +9,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use function Livewire\invade;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -31,7 +32,6 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
-use function Livewire\invade;
 
 class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize, WithColumnWidths, WithColumnFormatting, WithCustomChunkSize
 {
