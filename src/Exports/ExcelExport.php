@@ -9,6 +9,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
 use function Livewire\invade;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -44,6 +45,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     use EvaluatesClosures;
     use AskForFilename;
     use AskForWriterType;
+    use CanModifyQuery;
     use Except;
     use Only;
     use WithChunkSize;
@@ -206,6 +208,10 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         $query = $this->columnsSource === 'table'
             ? invade($this->livewire)->getFilteredTableQuery()
             : $this->getModelClass()::query();
+
+        if ($this->modifyQueryUsing) {
+            $query = ($this->modifyQueryUsing)($query);
+        }
 
         return $query
             ->when(

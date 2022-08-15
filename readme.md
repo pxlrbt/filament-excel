@@ -282,6 +282,21 @@ ExportAction::make()->exports([
 ])
 ```
 
+### Modify the query
+
+You can modify the query that is used to retrieve the model by using `->modifyQueryUsing()`:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()
+        ->fromTable()
+        ->modifyQueryUsing(fn ($query) => $query->where('exportable', true))
+])
+```
+
 ### Queued exports
 
 Exports for resources with many entries can take some time and therefore can be queued with `->queue()`. They will be processed in background jobs and the user will be notified with a notification on the next page load (or when Livewire is polling). 
