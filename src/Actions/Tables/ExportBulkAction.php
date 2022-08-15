@@ -21,6 +21,8 @@ class ExportBulkAction extends BulkAction
     {
         $this->parentSetUp();
 
+        $this->icon('heroicon-o-download');
+
         $this->deselectRecordsAfterCompletion();
     }
 

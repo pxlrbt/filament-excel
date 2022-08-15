@@ -4,6 +4,7 @@ namespace pxlrbt\FilamentExcel\Columns;
 
 use Closure;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Filament\Tables\Columns\Column as TableColumn;
 use Illuminate\Support\Str;
 use Laravel\SerializableClosure\SerializableClosure;
 
@@ -19,7 +20,11 @@ class Column
 
     public Closure | string | null $format = null;
 
-    public SerializableClosure $formatStateUsing;
+    public ?TableColumn $tableColumn = null;
+
+    public ?SerializableClosure $getStateUsing = null;
+
+    public ?SerializableClosure $formatStateUsing = null;
 
     protected function __construct($name)
     {
@@ -76,9 +81,23 @@ class Column
         return $this;
     }
 
+    public function tableColumn(TableColumn $tableColumn): static
+    {
+        $this->tableColumn = $tableColumn;
+
+        return $this;
+    }
+
     public function getFormat()
     {
         return $this->format;
+    }
+
+    public function getStateUsing(callable $callback): static
+    {
+        $this->getStateUsing = new SerializableClosure($callback);
+
+        return $this;
     }
 
     public function formatStateUsing(callable $callback): static

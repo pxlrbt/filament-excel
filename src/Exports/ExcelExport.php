@@ -2,13 +2,16 @@
 
 namespace pxlrbt\FilamentExcel\Exports;
 
-use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
+
+use function Livewire\invade;
+
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -191,12 +194,22 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             ->queueExport($filename, 'filament-excel', $this->getWriterType())
             ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId)]);
 
-        Filament::notify('success', __('Exports queued'));
+        Notification::make()
+            ->title(__('Export queued'))
+            ->body(__('The export was queued. You will be notified when it is ready for download.'))
+            ->success()
+            ->seconds(5)
+            ->icon('heroicon-o-inbox-in')
+            ->send();
     }
 
     public function query(): Builder
     {
-        return $this->getModelClass()::query()
+        $query = $this->columnsSource === 'table'
+            ? invade($this->livewire)->getFilteredTableQuery()
+            : $this->getModelClass()::query();
+
+        return $query
             ->when(
                 $this->recordIds,
                 fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
