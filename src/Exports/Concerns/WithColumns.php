@@ -128,19 +128,40 @@ trait WithColumns
 
     protected function createFieldMappingFromTable(): Collection
     {
-        if ($this->getLivewire() instanceof HasTable) {
+        $livewire = $this->getLivewire();
+
+        if ($livewire instanceof HasTable) {
             $columns = collect(invade($this->getLivewire())->getTableColumns());
         } else {
             $table = $this->getResourceClass()::table(new Table());
             $columns = collect($table->getColumns());
         }
 
-        return $columns->mapWithKeys(fn (Tables\Columns\Column $column) => [
-            $column->getName() => Column::make($column->getName())
-                ->heading($column->getLabel())
-                ->tableColumn($column)
-                ->getStateUsing(invade($column)->getStateUsing)
-                ->formatStateUsing(invade($column)->formatStateUsing),
-        ]);
+        return $columns
+            ->when(
+                $livewire->hasToggleableTableColumns(),
+                fn ($collection) => $collection->reject(
+                    fn (Tables\Columns\Column $column) => $livewire->isTableColumnToggledHidden($column->getName())
+                )
+            )
+            ->mapWithKeys(function (Tables\Columns\Column $column) {
+                $invadedColumn = invade($column);
+
+                return [
+                    $column->getName() => Column::make($column->getName())
+                        ->heading($column->getLabel())
+                        ->tableColumn($column)
+                        ->getStateUsing(
+                            isset($invadedColumn->getStateUsing)
+                                ? $invadedColumn->getStateUsing
+                                : null
+                        )
+                        ->formatStateUsing(
+                            isset($invadedColumn->formatStateUSing)
+                                ? $invadedColumn->formatStateUSing
+                                : null
+                        ),
+                ];
+            });
     }
 }
