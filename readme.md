@@ -312,14 +312,14 @@ ExportAction::make()->exports([
 ])
 ```
 
-The size of exported records per Job can be adjusted by using `->chunkSize()`:
+The size of exported records per Job can be adjusted by using `->withChunkSize()`:
 
 ```php
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+se pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 ExportAction::make()->exports([
-    ExcelExport::make()->queue()->chunkSize(100)
+    ExcelExport::make()->queue()->withChunkSize(100)
 ])
 ```
 
