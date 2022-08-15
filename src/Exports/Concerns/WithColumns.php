@@ -12,6 +12,7 @@ use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
 
+use Throwable;
 use function Livewire\invade;
 
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -147,20 +148,15 @@ trait WithColumns
             ->mapWithKeys(function (Tables\Columns\Column $column) {
                 $invadedColumn = invade($column);
 
+                $exportColumn = Column::make($column->getName())
+                    ->heading($column->getLabel())
+                    ->tableColumn($column)
+                    ->getStateUsing($invadedColumn->getStateUsing);
+
+                rescue(fn () => $exportColumn->formatStateUsing($invadedColumn->formatStateUsing), report: false);
+
                 return [
-                    $column->getName() => Column::make($column->getName())
-                        ->heading($column->getLabel())
-                        ->tableColumn($column)
-                        ->getStateUsing(
-                            isset($invadedColumn->getStateUsing)
-                                ? $invadedColumn->getStateUsing
-                                : null
-                        )
-                        ->formatStateUsing(
-                            isset($invadedColumn->formatStateUSing)
-                                ? $invadedColumn->formatStateUSing
-                                : null
-                        ),
+                    $column->getName() => $exportColumn
                 ];
             });
     }
