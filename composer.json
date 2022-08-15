@@ -39,8 +39,7 @@
     "scripts": {
         "cs-fixer": "vendor/bin/php-cs-fixer fix --diff",
         "style": [
-            "@cs-fixer",
-            "@phpstan"
+            "@cs-fixer"
         ]
     }
 }
