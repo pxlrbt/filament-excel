@@ -193,8 +193,8 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId)]);
 
         Notification::make()
-            ->title(__('Export queued'))
-            ->body(__('The export was queued. You will be notified when it is ready for download.'))
+            ->title(__('filament-excel::notifications.queued.title'))
+            ->body(__('filament-excel::notifications.queued.body'))
             ->success()
             ->seconds(5)
             ->icon('heroicon-o-inbox-in')
