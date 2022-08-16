@@ -3,15 +3,14 @@
 namespace pxlrbt\FilamentExcel\Exports;
 
 use Filament\Notifications\Notification;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
-
 use function Livewire\invade;
-
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -67,7 +66,11 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     protected ?string $livewireClass = null;
 
+    protected ?Model $livewireOwnerRecord = null;
+
     protected ?Model $modelInstance = null;
+
+    protected ?Builder $query = null;
 
     protected array $formSchema = [];
 
@@ -125,7 +128,12 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             return $this->livewire;
         }
 
-        $this->livewire = app($this->livewireClass);;
+        $this->livewire = app($this->livewireClass);
+
+        if ($this->livewire instanceof RelationManager) {
+            $this->livewire->ownerRecord = $this->livewireOwnerRecord;
+        }
+
         $this->livewire->bootedInteractsWithTable();
 
         return $this->livewire;
@@ -218,13 +226,20 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     {
         $query = $this->getQuery();
 
-        $this->livewire = null;
+        if ($this->isQueued()) {
+            $this->query = null;
+            $this->livewire = null;
+        }
 
         return $query;
     }
 
     public function getQuery()
     {
+        if ($this->query) {
+            return $this->query;
+        }
+
         $livewire = $this->getLivewire();
 
         $query = $this->columnsSource === 'table'
@@ -235,7 +250,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             $query = $this->modifyQueryUsing->getClosure()($query);
         }
 
-        return $query
+        return $this->query = $query
             ->when(
                 $this->recordIds,
                 fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)

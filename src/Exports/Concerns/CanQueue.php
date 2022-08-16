@@ -38,6 +38,10 @@ trait CanQueue
         $this->generatedColumns = [];
         $this->formSchema = [];
 
+        if (isset($this->livewire->ownerRecord)) {
+            $this->livewireOwnerRecord = $this->livewire->ownerRecord;
+        }
+
         $this->livewire = null;
     }
 }
