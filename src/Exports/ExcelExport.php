@@ -67,6 +67,8 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     protected ?string $livewireClass = null;
 
+    protected ?Model $modelInstance = null;
+
     protected array $formSchema = [];
 
     protected ?array $formData;
@@ -121,12 +123,12 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     {
         if ($this->livewire) {
             return $this->livewire;
-        } else {
-            $livewire = app($this->livewireClass);
-            $livewire->bootedInteractsWithTable();
-
-            return $livewire;
         }
+
+        $this->livewire = app($this->livewireClass);;
+        $this->livewire->bootedInteractsWithTable();
+
+        return $this->livewire;
     }
 
     public function getLivewireClass(): ?string
@@ -141,7 +143,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     protected function getModelInstance(): Model
     {
-        return $this->query()->first();
+        return $this->modelInstance ??= $this->getQuery()->first();
     }
 
     protected function getResourceClass(): ?string
@@ -214,12 +216,16 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function query(): Builder
     {
-        if ($this->getLivewire()) {
-            $livewire = $this->getLivewire();
-        } else {
-            $livewire = app($this->livewireClass);
-            $livewire->bootedInteractsWithTable();
-        }
+        $query = $this->getQuery();
+
+        $this->livewire = null;
+
+        return $query;
+    }
+
+    public function getQuery()
+    {
+        $livewire = $this->getLivewire();
 
         $query = $this->columnsSource === 'table'
             ? invade($livewire)->getFilteredTableQuery()
@@ -244,7 +250,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             'model' => $this->getModelClass(),
             'resource' => $this->getResourceClass(),
             'recordIds' => $this->getRecordIds(),
-            'query' => $this->query(),
+            'query' => $this->getQuery(),
         ];
     }
 }
