@@ -119,7 +119,14 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function getLivewire(): ?Component
     {
-        return $this->livewire;
+        if ($this->livewire) {
+            return $this->livewire;
+        } else {
+            $livewire = app($this->livewireClass);
+            $livewire->bootedInteractsWithTable();
+
+            return $livewire;
+        }
     }
 
     public function getLivewireClass(): ?string
@@ -207,12 +214,19 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function query(): Builder
     {
+        if ($this->getLivewire()) {
+            $livewire = $this->getLivewire();
+        } else {
+            $livewire = app($this->livewireClass);
+            $livewire->bootedInteractsWithTable();
+        }
+
         $query = $this->columnsSource === 'table'
-            ? invade($this->livewire)->getFilteredTableQuery()
+            ? invade($livewire)->getFilteredTableQuery()
             : $this->getModelClass()::query();
 
         if ($this->modifyQueryUsing) {
-            $query = ($this->modifyQueryUsing)($query);
+            $query = $this->modifyQueryUsing->getClosure()($query);
         }
 
         return $query

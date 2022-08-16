@@ -145,12 +145,13 @@ trait WithColumns
                 )
             )
             ->mapWithKeys(function (Tables\Columns\Column $column) {
-                $invadedColumn = invade($column);
+                $clonedCol = clone $column;
+                $invadedColumn = invade($clonedCol);
 
                 $exportColumn = Column::make($column->getName())
                     ->heading($column->getLabel())
-                    ->tableColumn($column)
-                    ->getStateUsing($invadedColumn->getStateUsing);
+                    ->getStateUsing($invadedColumn->getStateUsing)
+                    ->tableColumn($column);
 
                 rescue(fn () => $exportColumn->formatStateUsing($invadedColumn->formatStateUsing), report: false);
 

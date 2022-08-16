@@ -7,6 +7,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Tables\Columns\Column as TableColumn;
 use Illuminate\Support\Str;
 use Laravel\SerializableClosure\SerializableClosure;
+use ReflectionClass;
 
 class Column
 {
@@ -83,6 +84,21 @@ class Column
 
     public function tableColumn(TableColumn $tableColumn): static
     {
+        // Try to remove all closures
+        foreach ((new ReflectionClass($tableColumn))->getProperties() as $property) {
+            $property->setAccessible(true);
+            $type = (string) $property->getType();
+
+            if (strpos($type, 'Closure') !== false) {
+                if (strpos($type, 'null') !== false || strpos($type, '?') !== false) {
+                    $property->setValue($tableColumn, null);
+                }
+            }
+        }
+
+        // $tableColumn->getStateUsing(null);
+        // $tableColumn->formatStateUsing(null);
+
         $this->tableColumn = $tableColumn;
 
         return $this;
