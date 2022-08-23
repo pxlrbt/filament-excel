@@ -6,7 +6,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Tables\Contracts\HasTable;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -70,7 +69,10 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     protected ?Model $modelInstance = null;
 
-    protected ?Builder $query = null;
+    /**
+     * @var \Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Query\Builder|mixed|null
+     */
+    protected $query = null;
 
     protected array $formSchema = [];
 
@@ -222,7 +224,10 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             ->send();
     }
 
-    public function query(): Builder
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Query\Builder|mixed|null
+     */
+    public function query()
     {
         $query = $this->getQuery();
 
