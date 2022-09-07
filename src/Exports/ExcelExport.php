@@ -155,7 +155,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     protected function getModelInstance(): Model
     {
-        return $this->modelInstance ??= $this->getQuery()->first();
+        return $this->modelInstance ??= new ($this->getModelClass());
     }
 
     protected function getResourceClass(): ?string
