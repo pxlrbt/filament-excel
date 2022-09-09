@@ -21,6 +21,7 @@ class ExportBulkAction extends BulkAction
     {
         $this->parentSetUp();
 
+        $this->label(__('filament-excel::actions.label'));
         $this->icon('heroicon-o-download');
 
         $this->deselectRecordsAfterCompletion();
