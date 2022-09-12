@@ -257,10 +257,15 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
             $query = $this->modifyQueryUsing->getClosure()($query);
         }
 
+        $whereCondition = "whereIntegerInRaw";
+        if ($this->getModelInstance()->getKeyType() === 'string') {
+            $whereCondition = "whereIn";
+        }
+        
         return $this->query = $query
             ->when(
                 $this->recordIds,
-                fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
+                fn ($query) => $query->$whereCondition($this->modelKeyName, $this->recordIds)
             );
     }
 
