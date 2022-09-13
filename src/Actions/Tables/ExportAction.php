@@ -21,9 +21,7 @@ class ExportAction extends Action
     {
         $this->parentSetUp();
 
-        $this->label(__('filament-excel::actions.label'));
         $this->button();
-        $this->icon('heroicon-o-download');
 
         $this->exports = collect([
             ExcelExport::make()->fromTable(),
