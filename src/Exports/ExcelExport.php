@@ -248,6 +248,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         }
 
         $livewire = $this->getLivewire();
+        $model = $this->getModelInstance();
 
         $query = $this->columnsSource === 'table'
             ? invade($livewire)->getFilteredTableQuery()
@@ -260,7 +261,9 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         return $this->query = $query
             ->when(
                 $this->recordIds,
-                fn ($query) => $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
+                fn ($query) => $model->getKeyType() === 'string'
+                    ? $query->whereIn($this->modelKeyName, $this->recordIds)
+                    : $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
             );
     }
 
