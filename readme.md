@@ -347,6 +347,49 @@ class CustomExport extends ExcelExport
 }
 ```
 
+### User Report Builder
+
+You can use the `->askForColumns()` to let the user build a report. This is especially useful when you have a lot of columns and want to let the user pick the ones they need and customize the display order.
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()->askForColumns()
+])
+```
+
+You can also create a custom export class and specify the columns where user can select a display format
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Columns\ColumnFormats;
+
+class CustomExport extends ExcelExport
+{
+    
+    public function setUp()
+    {
+        $this->withFilename('custom_export');
+        $this->withColumns([
+            Column::make('total')->askForFormat(availableFormats: ColumnFormats::NUMBER),
+            Column::make('created_at')->askForFormat(availableFormats: ColumnFormats::DATE),
+        ]);
+    }
+}
+```
+
+Then you can you custom export with `->askForColumns()`:
+
+```php
+ExportAction::make()->exports([
+    CustomExport::make()->askForColumns()
+])
+```
+
 ## Contributing
 
 If you want to contribute to this packages, you may want to test it in a real Filament project:

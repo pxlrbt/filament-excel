@@ -3,19 +3,25 @@
 namespace pxlrbt\FilamentExcel\Columns;
 
 use Closure;
+use Filament\Support\Concerns\Configurable;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Tables\Columns\Column as TableColumn;
 use Illuminate\Support\Str;
 use Laravel\SerializableClosure\SerializableClosure;
+use pxlrbt\FilamentExcel\Interactions\AskForColumnFormat;
 use ReflectionClass;
+use pxlrbt\FilamentExcel\Concerns\HasForm;
+use pxlrbt\FilamentExcel\Concerns\HasLabel;
+use pxlrbt\FilamentExcel\Concerns\HasName;
 
 class Column
 {
+    use Configurable;
     use EvaluatesClosures;
-
-    public string $name;
-
-    public Closure | string | null $heading = null;
+    use AskForColumnFormat;
+    use HasLabel;
+    use HasName;
+    use HasForm;
 
     public Closure | int | null $width = null;
 
@@ -29,38 +35,33 @@ class Column
 
     protected function __construct($name)
     {
-        $this->name = $name;
+        $this->name($name)
+            ->label(Str::headline($this->name));
     }
 
     public static function make($name): static
     {
         $static = new static($name);
         $static->formatStateUsing(fn ($state) => $state);
-        $static->setUp();
+        $static->configure();
 
         return $static;
     }
 
-    public function setUp()
-    {
-        //
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
+    /**
+     * @deprecated use label() instead
+     */
     public function heading(Closure | string $heading): static
     {
-        $this->heading = $heading;
-
-        return $this;
+        return $this->label($heading);
     }
 
+    /**
+     * @deprecated use getLabel() instead
+     */
     public function getHeading()
     {
-        return $this->heading ?? Str::headline($this->name);
+        return $this->getLabel();
     }
 
     public function width(Closure | int $width): static
@@ -78,6 +79,25 @@ class Column
     public function format(Closure | string $format): static
     {
         $this->format = $format;
+
+        return $this;
+    }
+
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    public function getStateUsing(?callable $callback): static
+    {
+        $this->getStateUsing = $callback ? new SerializableClosure($callback) : null;
+
+        return $this;
+    }
+
+    public function formatStateUsing(?callable $callback): static
+    {
+        $this->formatStateUsing = $callback ? new SerializableClosure($callback) : null;
 
         return $this;
     }
@@ -100,25 +120,6 @@ class Column
         // $tableColumn->formatStateUsing(null);
 
         $this->tableColumn = $tableColumn;
-
-        return $this;
-    }
-
-    public function getFormat()
-    {
-        return $this->format;
-    }
-
-    public function getStateUsing(?callable $callback): static
-    {
-        $this->getStateUsing = $callback ? new SerializableClosure($callback) : null;
-
-        return $this;
-    }
-
-    public function formatStateUsing(?callable $callback): static
-    {
-        $this->formatStateUsing = $callback ? new SerializableClosure($callback) : null;
 
         return $this;
     }

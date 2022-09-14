@@ -10,34 +10,27 @@ class ExportAction extends Action
 {
     use ExportableAction {
         ExportableAction::setUp as parentSetUp;
+        ExportableAction::handleExport as parentHandleExport;
     }
 
-    public static function make(?string $name = 'export'): static
+    public static function getDefaultName(): ?string
     {
-        return parent::make($name);
+        return 'export';
     }
 
     protected function setUp(): void
     {
         $this->parentSetUp();
 
-        $this->button();
-        $this->icon('heroicon-o-download');
-
-        $this->exports = collect([
-            ExcelExport::make()->fromForm(),
-        ]);
+        $this
+            ->button()
+            ->exports([ExcelExport::make()->fromForm()]);
     }
 
     public function handleExport(array $data)
     {
-        $exportable = $this->getSelectedExport($data);
-        $record = $this->getLivewire()->record;
+        $record = collect([$this->getLivewire()->record]);
 
-        return app()->call([$exportable, 'hydrate'], [
-            'livewire' => $this->getLivewire(),
-            'records' => collect([$record]),
-            'formData' => data_get($data, $exportable->getName()),
-        ])->export();
+        return $this->parentHandleExport($data, $record);
     }
 }

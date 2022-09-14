@@ -36,7 +36,7 @@ trait WithHeadings
         $namesAsHeadings = $this->evaluate($this->withNamesAsHeadings);
 
         return $this->getMapping($this->getModelInstance())
-            ->map(fn (Column $column) => $namesAsHeadings ? $column->getName() : $this->evaluate($column->getHeading()))
+            ->map(fn (Column $column) => $namesAsHeadings ? $column->getName() : $this->evaluate($column->getLabel()))
             ->toArray();
     }
 

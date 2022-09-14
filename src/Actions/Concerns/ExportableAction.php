@@ -6,6 +6,7 @@ use Closure;
 use Exception;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
@@ -17,13 +18,12 @@ trait ExportableAction
 
     protected function setUp(): void
     {
-        $this->modalWidth('md');
-
-        $this->label(__('filament-excel::actions.label'));
-        $this->icon('heroicon-o-download');
-        $this->action(Closure::fromCallable([$this, 'handleExport']));
-
-        $this->exports = collect([ExcelExport::make('export')->fromTable()]);
+        $this
+            ->modalWidth('md')
+            ->label(__('filament-excel::actions.label'))
+            ->icon('heroicon-o-download')
+            ->action(Closure::fromCallable([$this, 'handleExport']))
+            ->exports([ExcelExport::make()->fromTable()]);
     }
 
     public function getFormSchema(): array
@@ -57,7 +57,7 @@ trait ExportableAction
     {
         return $this->exports
             ->map(function (ExcelExport $export, $key) {
-                $schema = $export->getFormSchema();
+                $schema = $export->container($this->getLivewire())->getFormSchema();
 
                 return empty($schema)
                     ? null
@@ -84,5 +84,16 @@ trait ExportableAction
         $this->exports = collect($exports);
 
         return $this;
+    }
+
+    public function handleExport(array $data, ?Collection $records = null)
+    {
+        $exportable = $this->getSelectedExport($data);
+
+        return app()->call([$exportable, 'hydrate'], [
+            'livewire' => $this->getLivewire(),
+            'formData' => Arr::get($data, $exportable->getName(), []),
+            'records' => $records,
+        ])->export();
     }
 }

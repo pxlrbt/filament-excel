@@ -12,9 +12,9 @@ class ExportBulkAction extends BulkAction
         ExportableAction::setUp as parentSetUp;
     }
 
-    public static function make(?string $name = 'export'): static
+    public static function getDefaultName(): ?string
     {
-        return parent::make($name);
+        return 'export';
     }
 
     protected function setUp(): void
@@ -22,16 +22,5 @@ class ExportBulkAction extends BulkAction
         $this->parentSetUp();
 
         $this->deselectRecordsAfterCompletion();
-    }
-
-    public function handleExport(Collection $records, array $data)
-    {
-        $exportable = $this->getSelectedExport($data);
-
-        return app()->call([$exportable, 'hydrate'], [
-            'livewire' => $this->getLivewire(),
-            'records' => $records,
-            'formData' => data_get($data, $exportable->getName()),
-        ])->export();
     }
 }
