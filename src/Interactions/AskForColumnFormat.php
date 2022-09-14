@@ -17,7 +17,7 @@ trait AskForColumnFormat
         $formatCallback ??= fn () => Arr::get($this->formData, 'format');
 
         $field = Select::make('format')
-            ->label($label ?? __('Format'))
+            ->label($label ?? __('filament-excel::fields.column_format'))
             ->default($default ?? NumberFormat::FORMAT_GENERAL)
             ->options(fn() => $this->getAvailableFormats());
 

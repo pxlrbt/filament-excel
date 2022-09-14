@@ -9,7 +9,7 @@ trait AskForFilename
     public function askForFilename(?string $default = null, ?string $label = null, ?callable $callback = null): self
     {
         $field = TextInput::make('filename')
-            ->label($label ?? __('Filename'))
+            ->label($label ?? __('filament-excel::fields.filename'))
             ->default($default ?? '')
             ->required();
 

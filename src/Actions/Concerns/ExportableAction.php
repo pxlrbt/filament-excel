@@ -42,7 +42,7 @@ trait ExportableAction
     {
         return [
             Select::make('selected_exportable')
-                ->label(__('Export template'))
+                ->label(__('filament-excel::fields.export_template'))
                 ->reactive()
                 ->default(0)
                 ->disablePlaceholderSelection()

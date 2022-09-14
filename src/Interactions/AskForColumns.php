@@ -26,7 +26,8 @@ trait AskForColumns
         }
 
         $field = ExportBuilder::make('columns')
-            ->hint(__('Select the columns you want to export.'))
+            ->label($label ?? __('filament-excel::fields.columns.label'))
+            ->hint(__('filament-excel::fields.columns.hint'))
             ->default($default ?? [])
             ->required()
             ->blocks($columns);
