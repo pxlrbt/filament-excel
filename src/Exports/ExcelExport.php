@@ -2,6 +2,7 @@
 
 namespace pxlrbt\FilamentExcel\Exports;
 
+use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
@@ -234,7 +235,6 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         $query = $this->getQuery();
 
         if ($this->isQueued()) {
-            $this->query = null;
             $this->livewire = null;
         }
 
@@ -243,6 +243,10 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function getQuery()
     {
+        if (is_string($this->query)) {
+            return EloquentSerializeFacade::unserialize($this->query);
+        }
+
         if ($this->query) {
             return $this->query;
         }
