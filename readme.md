@@ -28,7 +28,7 @@ composer require pxlrbt/filament-excel
 If composer require fails on Laravel 9 because of the simple-cache dependency, you will have to specify the psr/simple-cache version as ^2.0 in your composer.json to satisfy the PhpSpreadsheet dependency. You can install both at the same time as:
 
 ```bash
-composer require psr/simple-cache:^1.0 pxlrbt/filament-excel
+composer require psr/simple-cache:^2.0 pxlrbt/filament-excel
 ```
 
 ## Quickstart
