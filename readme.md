@@ -42,7 +42,7 @@ Starting with v0.2 Filament Excel should work with both `filament/filament` and 
 
 namespace App\Filament\Resources;
 
-use pxlrbt\FilamentExcel\Actions\Pages\ExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class UserResource extends Resource
 {  
