@@ -153,7 +153,7 @@ ExportAction::make()->exports([
 
 ### Defining columns
 
-When using `->formForm()`/`->formTable()`/`->formModel()` the columns are resolved from your table or form definition. You can also provide columns manually, append columns or overwrite generated columns.
+When using `->fromForm()`/`->fromTable()`/`->fromModel()` the columns are resolved from your table or form definition. You can also provide columns manually, append columns or overwrite generated columns.
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
@@ -190,7 +190,7 @@ When you neither pass `->only()` nor `->except()` the export will also respect t
 
 ### Headings
 
-When using `->formForm()`/`->formTable()`/`->formModel()` the headings are resolved from your table or form definition. You can also overwrite headings:
+When using `->fromForm()`/`->fromTable()`/`->fromModel()` the headings are resolved from your table or form definition. You can also overwrite headings:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
