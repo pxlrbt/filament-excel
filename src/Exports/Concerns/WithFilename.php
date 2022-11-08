@@ -9,7 +9,7 @@ trait WithFilename
 {
     protected Closure | string | null $filename = null;
 
-    public function withFilename(Closure | string $filename): self
+    public function withFilename(Closure | string $filename): static
     {
         $this->filename = $filename;
 

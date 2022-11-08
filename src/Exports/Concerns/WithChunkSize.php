@@ -6,7 +6,7 @@ trait WithChunkSize
 {
     protected int $chunkSize = 100;
 
-    public function withChunkSize(int $chunkSize): self
+    public function withChunkSize(int $chunkSize): static
     {
         $this->chunkSize = $chunkSize;
 

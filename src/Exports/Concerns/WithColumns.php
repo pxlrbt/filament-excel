@@ -26,7 +26,7 @@ trait WithColumns
 
     protected ?string $columnsSource = null;
 
-    public function withColumns(Closure | array | string | null $columns = null): self
+    public function withColumns(Closure | array | string | null $columns = null): static
     {
         if (is_callable($columns)) {
             $this->columns = $columns;

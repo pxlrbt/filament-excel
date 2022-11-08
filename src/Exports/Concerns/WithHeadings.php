@@ -13,14 +13,14 @@ trait WithHeadings
 
     protected Closure | bool $withNamesAsHeadings = false;
 
-    public function withoutHeadings(Closure | bool $condition = true): self
+    public function withoutHeadings(Closure | bool $condition = true): static
     {
         $this->withoutHeadings = $condition;
 
         return $this;
     }
 
-    public function withNamesAsHeadings(Closure | bool $condition = true): self
+    public function withNamesAsHeadings(Closure | bool $condition = true): static
     {
         $this->withNamesAsHeadings = $condition;
 

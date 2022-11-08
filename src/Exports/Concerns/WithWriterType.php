@@ -9,7 +9,7 @@ trait WithWriterType
 {
     protected Closure | string | null $writerType = null;
 
-    public function withWriterType(Closure | string | null $writerType = null): self
+    public function withWriterType(Closure | string | null $writerType = null): static
     {
         $this->writerType = $writerType;
 

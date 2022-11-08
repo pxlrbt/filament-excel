@@ -8,7 +8,7 @@ trait Only
 {
     protected Closure | array | null $only = [];
 
-    public function only(Closure | array | string $columns): self
+    public function only(Closure | array | string $columns): static
     {
         $this->only = match (true) {
             is_callable($columns), is_array($columns) => $columns,
