@@ -58,7 +58,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
                 ['path' => $export['filename']]
             );
 
-            Notification::make('filament-excel:exports:' . $export['filename'] )
+            Notification::make('filament-excel:exports:' . md5($export['filename']))
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
