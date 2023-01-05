@@ -3,6 +3,7 @@
 namespace pxlrbt\FilamentExcel\Exports;
 
 use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
+use Closure;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
@@ -13,6 +14,8 @@ use Livewire\Component;
 
 use function Livewire\invade;
 
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -37,7 +40,9 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
-class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize, WithColumnWidths, WithColumnFormatting, WithCustomChunkSize
+
+
+class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize, WithColumnWidths, WithColumnFormatting, WithCustomChunkSize,WithEvents
 {
     use Exportable, CanQueue  {
         Exportable::download as downloadExport;
@@ -86,6 +91,8 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     protected ?string $modelKeyName;
 
     protected array $recordIds = [];
+
+    protected bool $rtl = false;
 
     public function __construct($name)
     {
@@ -269,6 +276,35 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
                     ? $query->whereIn($this->modelKeyName, $this->recordIds)
                     : $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
             );
+    }
+
+
+        public function rtl(bool | Closure $condition = true): static
+    {
+        $this->rtl = $condition;
+
+        return $this;
+    }
+
+        public function registerEvents(): array
+    {
+
+        if($this->rtl)
+        {
+
+            return [
+                AfterSheet::class    => function(AfterSheet $event) {
+                    $event->sheet->getDelegate()->setRightToLeft(true);
+                },
+            ];
+
+        }
+        return [
+            AfterSheet::class    => function(AfterSheet $event) {
+                $event->sheet->getDelegate()->setRightToLeft(false);
+            },
+        ];
+
     }
 
     protected function getDefaultEvaluationParameters(): array
