@@ -195,6 +195,7 @@ When using `->fromForm()`/`->fromTable()`/`->fromModel()` the headings are resol
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
@@ -214,6 +215,7 @@ Every column can be formatted by providing a Closure. Additional to the default 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
@@ -231,6 +233,7 @@ Columns are auto-scaled to fit the content. If you want to overwrite this with a
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
@@ -244,7 +247,8 @@ The underlying package PhpSpreadsheet provides various options for Excel column 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat
+use pxlrbt\FilamentExcel\Columns\Column;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
