@@ -101,7 +101,7 @@ ExportAction::make()->exports([
 
 ### Closure customization
 
-Many of the functions for customising the export class, accept a Closure that gets passed dynamcic data:
+Many of the functions for customising the export class, accept a Closure that gets passed dynamic data:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
