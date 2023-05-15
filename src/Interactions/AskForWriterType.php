@@ -16,7 +16,7 @@ trait AskForWriterType
         ];
 
         $field = Select::make('writer_type')
-            ->label($label ?? __('Type'))
+            ->label($label ?? __('filament-excel::fields.writer_type'))
             ->options($options)
             ->default($default ?? '')
             ->required();

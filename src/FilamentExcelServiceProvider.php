@@ -9,31 +9,38 @@ use Filament\Notifications\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\ServiceProvider;
+
+use Filament\PluginServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 
-class FilamentExcelServiceProvider extends ServiceProvider
+class FilamentExcelServiceProvider extends PluginServiceProvider
 {
-    public function register()
+    public function configurePackage(Package $package): void
+    {
+        $package
+            ->name('filament-excel')
+            ->hasRoute('web')
+            ->hasViews()
+            ->hasCommands([PruneExportsCommand::class])
+            ->hasTranslations();
+
+        $this->setFilamentExcelDisk();
+    }
+
+    public function setFilamentExcelDisk()
     {
         config()->set('filesystems.disks.filament-excel', [
             'driver' => 'local',
             'root' => storage_path('app/filament-excel'),
             'url' => config('app.url') . '/filament-excel',
         ]);
-
-        parent::register();
     }
 
-    public function boot()
+    public function packageBooted(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'filament-excel');
-
-        $this->commands([PruneExportsCommand::class]);
-
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
             $schedule->command(PruneExportsCommand::class)->daily();
         });

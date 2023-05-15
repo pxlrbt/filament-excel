@@ -9,32 +9,20 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 class ExportAction extends Action
 {
     use ExportableAction {
-        ExportableAction::setUp as parentSetUp;
+        ExportableAction::handleExport as parentHandleExport;
     }
 
-    public static function make(?string $name = 'export'): static
+    public static function getDefaultName(): ?string
     {
-        return parent::make($name);
+        return 'export';
     }
 
-    protected function setUp(): void
+    public function handleExport(array $data, $record = null)
     {
-        $this->parentSetUp();
+        if ($record) {
+            $record = collect([$record]);
+        }
 
-        $this->button();
-
-        $this->exports = collect([
-            ExcelExport::make()->fromTable(),
-        ]);
-    }
-
-    public function handleExport(array $data)
-    {
-        $exportable = $this->getSelectedExport($data);
-
-        return app()->call([$exportable, 'hydrate'], [
-            'livewire' => $this->getLivewire(),
-            'formData' => data_get($data, $exportable->getName()),
-        ])->export();
+        return $this->parentHandleExport($data, $record);
     }
 }

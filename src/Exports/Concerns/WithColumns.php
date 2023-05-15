@@ -10,6 +10,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 use function Livewire\invade;
@@ -21,6 +22,8 @@ trait WithColumns
     public Closure | array $columns = [];
 
     public Closure | array $generatedColumns = [];
+
+    public array $selectedColumns = [];
 
     protected ?Collection $cachedMap = null;
 
@@ -46,7 +49,13 @@ trait WithColumns
         $columns = $this->evaluate($this->generatedColumns);
 
         foreach ($this->evaluate($this->columns) as $column) {
-            $columns[$column->getName()] = $column;
+            /** @var Column $column */
+            $columns[$column->getName()] = $column->formData(Arr::get($this->selectedColumns, $column->getName(), []));
+        }
+
+        if ($this->selectedColumns) {
+            // rearrange columns based on selectedColumns order
+            $columns = array_replace(array_flip(array_keys($this->selectedColumns)), $columns);
         }
 
         return $columns;
@@ -80,7 +89,7 @@ trait WithColumns
             return collect($this->getModelClass()::first()->getAttributes())
                 ->map(
                     fn ($attribute, $key) => $mapping->has($key)
-                    ? Column::make($key)->heading($mapping->get($key)->getHeading())
+                    ? Column::make($key)->label($mapping->get($key)->getHeading())
                     : Column::make($key)
                 )
                 ->toArray();
@@ -122,7 +131,7 @@ trait WithColumns
             ->filter(fn ($field) => $field instanceof Field)
             ->mapWithKeys(fn (Field $field) => [
                 $field->getName() => Column::make($field->getName())
-                    ->heading($field->getLabel()),
+                    ->label($field->getLabel()),
             ]);
     }
 
@@ -149,7 +158,7 @@ trait WithColumns
                 $invadedColumn = invade($clonedCol);
 
                 $exportColumn = Column::make($column->getName())
-                    ->heading($column->getLabel())
+                    ->label($column->getLabel())
                     ->getStateUsing($invadedColumn->getStateUsing)
                     ->tableColumn($column);
 
@@ -159,5 +168,15 @@ trait WithColumns
                     $column->getName() => $exportColumn,
                 ];
             });
+    }
+
+    public function resolveSelectedColumns(): void
+    {
+        if ($columns = Arr::get($this->formData, 'columns')) {
+            foreach ($columns as $column) {
+                $this->selectedColumns[$column['type']] = $column['data'];
+            }
+            $this->only(array_keys($this->selectedColumns));
+        }
     }
 }

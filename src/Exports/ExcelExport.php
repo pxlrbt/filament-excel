@@ -5,12 +5,17 @@ namespace pxlrbt\FilamentExcel\Exports;
 use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Concerns\Configurable;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
+use pxlrbt\FilamentExcel\Concerns\HasForm;
+use pxlrbt\FilamentExcel\Concerns\HasLabel;
+use pxlrbt\FilamentExcel\Concerns\HasName;
+use pxlrbt\FilamentExcel\Interactions\AskForColumns;
 use function Livewire\invade;
 
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -45,9 +50,11 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         CanQueue::queue insteadof Exportable;
     }
 
+    use Configurable;
     use EvaluatesClosures;
     use AskForFilename;
     use AskForWriterType;
+    use AskForColumns;
     use CanModifyQuery;
     use Except;
     use Only;
@@ -59,10 +66,9 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     use WithMapping;
     use WithWidths;
     use WithColumnFormats;
-
-    protected string $name;
-
-    protected ?string $label = null;
+    use HasName;
+    use HasLabel;
+    use HasForm;
 
     protected ?Component $livewire = null;
 
@@ -77,10 +83,6 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
      */
     protected $query = null;
 
-    protected array $formSchema = [];
-
-    protected ?array $formData;
-
     protected ?string $model = null;
 
     protected ?string $modelKeyName;
@@ -89,42 +91,29 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name($name)
+            ->label(Str::title($name));
     }
 
-    public static function make(string $name = 'export'): static
+    public static function make(?string $name = null): static
     {
+        $name ??= static::getDefaultName();
         $static = app(static::class, ['name' => $name]);
-        $static->setUp();
+        $static->configure();
 
         return $static;
     }
 
-    public function setUp()
+    public static function getDefaultName(): ?string
     {
-        //
+        return 'export';
     }
 
-    public function getName(): string
+    public function container(Component $livewire): static
     {
-        return $this->name;
-    }
-
-    public function label(string $label): static
-    {
-        $this->label = $label;
+        $this->livewire = $livewire;
 
         return $this;
-    }
-
-    public function getLabel(): string
-    {
-        return $this->label ?? Str::headline($this->name);
-    }
-
-    public function getFormSchema(): array
-    {
-        return $this->formSchema;
     }
 
     public function getLivewire(): ?Component
@@ -195,7 +184,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         $this->modelKeyName = $this->getModelInstance()->getKeyName();
         $this->recordIds = $records?->pluck($this->modelKeyName)->toArray() ?? [];
 
-        $this->formData = $formData;
+        $this->formData($formData);
 
         return $this;
     }
@@ -204,6 +193,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     {
         $this->resolveFilename();
         $this->resolveWriterType();
+        $this->resolveSelectedColumns();
 
         if (! $this->isQueued()) {
             return $this->downloadExport($this->getFilename(), $this->getWriterType());
