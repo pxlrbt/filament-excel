@@ -20,7 +20,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
         config()->set('filesystems.disks.filament-excel', [
             'driver' => 'local',
             'root' => storage_path('app/filament-excel'),
-            'url' => config('app.url') . '/filament-excel',
+            'url' => config('app.url').'/filament-excel',
         ]);
 
         parent::register();
@@ -28,9 +28,9 @@ class FilamentExcelServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'filament-excel');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'filament-excel');
 
         $this->commands([PruneExportsCommand::class]);
 
@@ -58,7 +58,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
                 ['path' => $export['filename']]
             );
 
-            Notification::make('filament-excel:exports:' . md5($export['filename']))
+            Notification::make('filament-excel:exports:'.md5($export['filename']))
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
@@ -91,6 +91,6 @@ class FilamentExcelServiceProvider extends ServiceProvider
 
     protected function getNotificationCacheKey($userId)
     {
-        return 'filament-excel:exports:' . $userId;
+        return 'filament-excel:exports:'.$userId;
     }
 }

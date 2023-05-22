@@ -6,9 +6,9 @@ use Closure;
 
 trait Only
 {
-    protected Closure | array | null $only = [];
+    protected Closure|array|null $only = [];
 
-    public function only(Closure | array | string $columns): static
+    public function only(Closure|array|string $columns): static
     {
         $this->only = match (true) {
             is_callable($columns), is_array($columns) => $columns,

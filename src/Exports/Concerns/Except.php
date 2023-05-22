@@ -6,9 +6,9 @@ use Closure;
 
 trait Except
 {
-    protected Closure | array | null $except = null;
+    protected Closure|array|null $except = null;
 
-    public function except(Closure | array | string $columns): static
+    public function except(Closure|array|string $columns): static
     {
         $this->except = match (true) {
             is_callable($columns), is_array($columns) => $columns,
