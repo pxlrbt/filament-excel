@@ -11,22 +11,20 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
-
 use function Livewire\invade;
-
 use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithColumns
 {
-    public Closure | array $columns = [];
+    public Closure|array $columns = [];
 
-    public Closure | array $generatedColumns = [];
+    public Closure|array $generatedColumns = [];
 
     protected ?Collection $cachedMap = null;
 
     protected ?string $columnsSource = null;
 
-    public function withColumns(Closure | array | string | null $columns = null): static
+    public function withColumns(Closure|array|string|null $columns = null): static
     {
         if (is_callable($columns)) {
             $this->columns = $columns;
