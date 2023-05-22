@@ -2,6 +2,8 @@
 
 namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
+use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
+
 trait CanQueue
 {
     protected bool $isQueued = false;
@@ -43,5 +45,6 @@ trait CanQueue
         }
 
         $this->livewire = null;
+        $this->query = EloquentSerializeFacade::serialize($this->query());
     }
 }
