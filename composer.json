@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.0",
-        "filament/filament": "^2.0",
+        "filament/filament": "^2.0|^3.0",
         "maatwebsite/excel": "^3.1"
     },
     "autoload": {
@@ -33,13 +33,13 @@
             ]
         }
     },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.6"
-    },
     "scripts": {
-        "cs-fixer": "vendor/bin/php-cs-fixer fix --diff",
+        "pint": "vendor/bin/pint",
         "style": [
             "@cs-fixer"
         ]
+    },
+    "require-dev": {
+        "laravel/pint": "^1.10"
     }
 }

@@ -9,24 +9,25 @@ jobs:
   php-cs-fixer:
     name: Run PHP-CS-Fixer
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-          tools: php-cs-fixer
 
       - name: Git checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Run php-cs-fixer
-        run: php-cs-fixer fix
+      - name: Run Laravel pint
+        run: ./vendor/bin/pint
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Apply php-cs-fixer changes
+          commit_message: Apply style changes
           file_pattern: '*.php'
