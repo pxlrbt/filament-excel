@@ -10,9 +10,9 @@ trait AskForWriterType
     public function askForWriterType(?string $default = null, ?array $options = null, ?string $label = null, ?callable $callback = null): self
     {
         $options = $options ?: [
-            Excel::XLS  => 'XLS',
+            Excel::XLS => 'XLS',
             Excel::XLSX => 'XLSX',
-            Excel::CSV  => 'CSV',
+            Excel::CSV => 'CSV',
         ];
 
         $field = Select::make('writer_type')

@@ -10,9 +10,7 @@ use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
-
 use function Livewire\invade;
-
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -44,7 +42,6 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
         Exportable::queue as queueExport;
         CanQueue::queue insteadof Exportable;
     }
-
     use EvaluatesClosures;
     use AskForFilename;
     use AskForWriterType;
@@ -211,7 +208,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
 
         $this->prepareQueuedExport();
 
-        $filename = Str::uuid() . '-' . $this->getFilename();
+        $filename = Str::uuid().'-'.$this->getFilename();
         $userId = auth()->id();
 
         $this

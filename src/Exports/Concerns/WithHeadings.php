@@ -7,20 +7,20 @@ use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithHeadings
 {
-    public array | null $headings = null;
+    public array|null $headings = null;
 
-    protected Closure | bool $withoutHeadings = false;
+    protected Closure|bool $withoutHeadings = false;
 
-    protected Closure | bool $withNamesAsHeadings = false;
+    protected Closure|bool $withNamesAsHeadings = false;
 
-    public function withoutHeadings(Closure | bool $condition = true): static
+    public function withoutHeadings(Closure|bool $condition = true): static
     {
         $this->withoutHeadings = $condition;
 
         return $this;
     }
 
-    public function withNamesAsHeadings(Closure | bool $condition = true): static
+    public function withNamesAsHeadings(Closure|bool $condition = true): static
     {
         $this->withNamesAsHeadings = $condition;
 
