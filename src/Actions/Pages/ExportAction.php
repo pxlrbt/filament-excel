@@ -3,7 +3,6 @@
 namespace pxlrbt\FilamentExcel\Actions\Pages;
 
 use Filament\Pages\Actions\Action;
-use Filament\Resources\Pages\ListRecords;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
