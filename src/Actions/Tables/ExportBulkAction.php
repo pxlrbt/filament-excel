@@ -19,6 +19,8 @@ class ExportBulkAction extends BulkAction
 
     protected function setUp(): void
     {
+        parent::setUp();
+        
         $this->parentSetUp();
 
         $this->deselectRecordsAfterCompletion();

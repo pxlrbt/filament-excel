@@ -30,7 +30,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
 
     public function configurePackage(Package $package): void
     {
-        $package->name('filemant-excel')
+        $package->name('filament-excel')
             ->hasCommands([PruneExportsCommand::class])
             ->hasRoutes(['web'])
             ->hasTranslations();
@@ -41,7 +41,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
 
         Event::listen(ExportFinishedEvent::class, [$this, 'cacheExportFinishedNotification']);
 
-        Filament::serving(Closure::fromCallable([$this, 'sendExportFinishedNotification']));
+        //Filament::serving(Closure::fromCallable([$this, 'sendExportFinishedNotification']));
     }
 
     public function sendExportFinishedNotification(): void
@@ -67,7 +67,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
-                ->icon('heroicon-o-download')
+                ->icon('heroicon-arrow-down-tray')
                 ->actions([
                     Action::make('download')
                         ->label(__('filament-excel::notifications.download_ready.download'))
