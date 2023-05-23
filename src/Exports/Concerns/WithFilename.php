@@ -7,9 +7,9 @@ use Illuminate\Support\Str;
 
 trait WithFilename
 {
-    protected Closure | string | null $filename = null;
+    protected Closure|string|null $filename = null;
 
-    public function withFilename(Closure | string $filename): static
+    public function withFilename(Closure|string $filename): static
     {
         $this->filename = $filename;
 
@@ -29,7 +29,7 @@ trait WithFilename
     {
         return Str::contains($filename, '.')
             ? $filename
-            : $filename . '.' . $this->getDefaultExtension();
+            : $filename.'.'.$this->getDefaultExtension();
     }
 
     protected function resolveFilename(): void

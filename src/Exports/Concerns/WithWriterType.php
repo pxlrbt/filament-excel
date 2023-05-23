@@ -7,9 +7,9 @@ use Maatwebsite\Excel\Excel;
 
 trait WithWriterType
 {
-    protected Closure | string | null $writerType = null;
+    protected Closure|string|null $writerType = null;
 
-    public function withWriterType(Closure | string | null $writerType = null): static
+    public function withWriterType(Closure|string|null $writerType = null): static
     {
         $this->writerType = $writerType;
 

@@ -12,9 +12,9 @@ class ExportAction extends Action
         ExportableAction::setUp as parentSetUp;
     }
 
-    public static function make(?string $name = 'export'): static
+    public static function getDefaultName(): ?string
     {
-        return parent::make($name);
+        return 'export';
     }
 
     protected function setUp(): void
@@ -32,11 +32,11 @@ class ExportAction extends Action
     public function handleExport(array $data)
     {
         $exportable = $this->getSelectedExport($data);
-        $record = $this->getLivewire()->record;
+        $livewire = $this->getLivewire();
 
         return app()->call([$exportable, 'hydrate'], [
             'livewire' => $this->getLivewire(),
-            'records' => collect([$record]),
+            'records' => property_exists($livewire, 'record') ? collect([$livewire->record]) : null,
             'formData' => data_get($data, $exportable->getName()),
         ])->export();
     }

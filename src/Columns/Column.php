@@ -15,11 +15,11 @@ class Column
 
     public string $name;
 
-    public Closure | string | null $heading = null;
+    public Closure|string|null $heading = null;
 
-    public Closure | int | null $width = null;
+    public Closure|int|null $width = null;
 
-    public Closure | string | null $format = null;
+    public Closure|string|null $format = null;
 
     public ?TableColumn $tableColumn = null;
 
@@ -51,7 +51,7 @@ class Column
         return $this->name;
     }
 
-    public function heading(Closure | string $heading): static
+    public function heading(Closure|string $heading): static
     {
         $this->heading = $heading;
 
@@ -63,7 +63,7 @@ class Column
         return $this->heading ?? Str::headline($this->name);
     }
 
-    public function width(Closure | int $width): static
+    public function width(Closure|int $width): static
     {
         $this->width = $width;
 
@@ -75,7 +75,7 @@ class Column
         return $this->width;
     }
 
-    public function format(Closure | string $format): static
+    public function format(Closure|string $format): static
     {
         $this->format = $format;
 

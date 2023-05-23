@@ -4,7 +4,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/pxlrbt/filament-excel.svg?include_prereleases)](https://packagist.org/packages/pxlrbt/filament-excel)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pxlrbt/filament-excel/Code%20Style?label=code%20style)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pxlrbt/filament-excel/code-style.yml?branch=main&label=Code%20style&style=flat-square)
 [![Total Downloads](https://img.shields.io/packagist/dt/pxlrbt/filament-excel.svg)](https://packagist.org/packages/pxlrbt/filament-excel)
 
 Easily configure your Excel exports in Filament via a bulk or page action.
@@ -101,7 +101,7 @@ ExportAction::make()->exports([
 
 ### Closure customization
 
-Many of the functions for customising the export class, accept a Closure that gets passed dynamcic data:
+Many of the functions for customising the export class, accept a Closure that gets passed dynamic data:
 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
@@ -195,6 +195,7 @@ When using `->fromForm()`/`->fromTable()`/`->fromModel()` the headings are resol
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
@@ -214,6 +215,7 @@ Every column can be formatted by providing a Closure. Additional to the default 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
@@ -231,6 +233,7 @@ Columns are auto-scaled to fit the content. If you want to overwrite this with a
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
@@ -244,7 +247,8 @@ The underlying package PhpSpreadsheet provides various options for Excel column 
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat
+use pxlrbt\FilamentExcel\Columns\Column;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
