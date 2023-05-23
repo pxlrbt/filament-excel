@@ -40,5 +40,7 @@
     },
     "scripts": {
         "pint": "vendor/bin/pint"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
