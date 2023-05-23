@@ -10,7 +10,7 @@ class ExportFinishedEvent
 
     public function __construct(
         public string $filename,
-        public ?int $userId,
+        public int|string|null $userId,
     ) {
         //
     }
