@@ -3,6 +3,7 @@
 namespace pxlrbt\FilamentExcel\Actions\Pages;
 
 use Filament\Pages\Actions\Action;
+use Filament\Resources\Pages\ListRecords;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
@@ -32,11 +33,11 @@ class ExportAction extends Action
     public function handleExport(array $data)
     {
         $exportable = $this->getSelectedExport($data);
-        $record = $this->getLivewire()->record;
+        $livewire = $this->getLivewire();
 
         return app()->call([$exportable, 'hydrate'], [
             'livewire' => $this->getLivewire(),
-            'records' => collect([$record]),
+            'records' => property_exists($livewire, 'record') ? collect([$livewire->record]) : null,
             'formData' => data_get($data, $exportable->getName()),
         ])->export();
     }
