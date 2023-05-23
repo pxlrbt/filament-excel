@@ -9,13 +9,14 @@ use Filament\Notifications\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\ServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 
-class FilamentExcelServiceProvider extends ServiceProvider
+class FilamentExcelServiceProvider extends PackageServiceProvider
 {
-    public function register()
+    public function register(): void
     {
         config()->set('filesystems.disks.filament-excel', [
             'driver' => 'local',
@@ -26,13 +27,12 @@ class FilamentExcelServiceProvider extends ServiceProvider
         parent::register();
     }
 
-    public function boot()
+    public function configurePackage(Package $package): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'filament-excel');
-
-        $this->commands([PruneExportsCommand::class]);
+        $package->name('filemant-excel')
+            ->hasCommands([PruneExportsCommand::class])
+            ->hasRoutes(['web'])
+            ->hasTranslations();
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
             $schedule->command(PruneExportsCommand::class)->daily();
@@ -43,7 +43,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
         Filament::serving(Closure::fromCallable([$this, 'sendExportFinishedNotification']));
     }
 
-    public function sendExportFinishedNotification()
+    public function sendExportFinishedNotification(): void
     {
         $exports = cache()->pull($this->getNotificationCacheKey(auth()->id()));
 
@@ -75,7 +75,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
         }
     }
 
-    public function cacheExportFinishedNotification(ExportFinishedEvent $event)
+    public function cacheExportFinishedNotification(ExportFinishedEvent $event): void
     {
         if ($event->userId === null) {
             return;
@@ -89,7 +89,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
         cache()->put($key, $exports);
     }
 
-    protected function getNotificationCacheKey($userId)
+    protected function getNotificationCacheKey($userId): string
     {
         return 'filament-excel:exports:'.$userId;
     }
