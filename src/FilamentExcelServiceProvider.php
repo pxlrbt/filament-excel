@@ -59,10 +59,10 @@ class FilamentExcelServiceProvider extends ServiceProvider
                 ['path' => $export['filename']]
             );
 
-            if (! Storage::exists('filament-excel/'. $export['filename'])) {
+            if (! Storage::exists('filament-excel/'.$export['filename'])) {
                 continue;
             }
-          
+
             Notification::make('filament-excel:exports:'.md5($export['filename']))
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
