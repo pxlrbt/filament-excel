@@ -49,7 +49,9 @@ trait WithMapping
 
         foreach ($columns as $column) {
             $key = $column->getName();
-            $state = data_get($record, $key);
+            $column->tableColumn->record($record);
+            $state = $column->tableColumn->getStateFromRecord();
+            //$state = data_get($record, $key);
 
             $state = $column->getStateUsing === null
                 ? $state
@@ -75,6 +77,10 @@ trait WithMapping
                     method_exists($state, '__toString') => $state->__toString(),
                     function_exists('enum_exists') && $state instanceof UnitEnum => $state->value,
                 };
+            }
+
+            if (is_array($state)) {
+                $state = implode("\n", $state);
             }
 
             $result[$key] = $state;
