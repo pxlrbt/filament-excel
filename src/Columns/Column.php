@@ -84,14 +84,16 @@ class Column
 
     public function tableColumn(TableColumn $tableColumn): static
     {
+        $clone = clone($tableColumn);
+
         // Try to remove all closures
-        foreach ((new ReflectionClass($tableColumn))->getProperties() as $property) {
+        foreach ((new ReflectionClass($clone))->getProperties() as $property) {
             $property->setAccessible(true);
             $type = (string) $property->getType();
 
             if (strpos($type, 'Closure') !== false) {
                 if (strpos($type, 'null') !== false || strpos($type, '?') !== false) {
-                    $property->setValue($tableColumn, null);
+                    $property->setValue($clone, null);
                 }
             }
         }
@@ -99,7 +101,7 @@ class Column
         // $tableColumn->getStateUsing(null);
         // $tableColumn->formatStateUsing(null);
 
-        $this->tableColumn = $tableColumn;
+        $this->tableColumn = $clone;
 
         return $this;
     }
