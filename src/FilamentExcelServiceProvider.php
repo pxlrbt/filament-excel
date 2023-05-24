@@ -8,6 +8,7 @@ use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
@@ -57,6 +58,10 @@ class FilamentExcelServiceProvider extends ServiceProvider
                 now()->addHours(24),
                 ['path' => $export['filename']]
             );
+
+            if (! Storage::exists('filament-excel/'.$export['filename'])) {
+                continue;
+            }
 
             Notification::make('filament-excel:exports:'.md5($export['filename']))
                 ->title(__('filament-excel::notifications.download_ready.title'))
