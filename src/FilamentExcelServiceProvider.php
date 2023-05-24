@@ -93,7 +93,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
         $exports[] = [
             'id' => Str::uuid(),
             'filename' => $event->filename,
-            'userId' => $event->userId
+            'userId' => $event->userId,
         ];
 
         cache()->put($key, $exports);
