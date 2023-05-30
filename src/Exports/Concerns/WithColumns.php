@@ -129,7 +129,7 @@ trait WithColumns
         $livewire = $this->getLivewire();
 
         if ($livewire instanceof HasTable) {
-            $columns = collect(invade($this->getLivewire())->getTableColumns());
+            $columns = collect($livewire->getTable()->getColumns());
         } else {
             $table = $this->getResourceClass()::table(new Table());
             $columns = collect($table->getColumns());
@@ -137,7 +137,7 @@ trait WithColumns
 
         return $columns
             ->when(
-                $livewire->hasToggleableTableColumns(),
+                $livewire->getTable()->hasToggleableColumns(),
                 fn ($collection) => $collection->reject(
                     fn (Tables\Columns\Column $column) => $livewire->isTableColumnToggledHidden($column->getName())
                 )

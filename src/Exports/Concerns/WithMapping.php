@@ -3,6 +3,7 @@
 namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use UnitEnum;
 
@@ -49,35 +50,48 @@ trait WithMapping
 
         foreach ($columns as $column) {
             $key = $column->getName();
-            $state = data_get($record, $key);
-
-            $state = $column->getStateUsing === null
-                ? $state
+            $column->tableColumn->record($record);
+            
+            $arrayState = $column->getStateUsing === null
+                ? $column->tableColumn->getStateFromRecord()
                 : $this->evaluate($column->getStateUsing->getClosure(), [
                     'column' => $column->tableColumn,
                     'livewire' => $this->getLivewire(),
                     'record' => $record,
-                    'state' => $state,
                 ]);
 
-            $state = $column->formatStateUsing === null
-                ? $state
-                : $this->evaluate($column->formatStateUsing->getClosure(), [
-                    'column' => $column->tableColumn,
-                    'livewire' => $this->getLivewire(),
-                    'record' => $record,
-                    'state' => $state,
-                ]);
+            if (is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
+                $arrayState = explode($separator, $arrayState);
+                $arrayState = (count($arrayState) === 1 && blank($arrayState[0])) ?
+                    [] :
+                    $arrayState;
+            }
+            
+            $arrayState = Arr::wrap($arrayState);
+            $formattedArrayState = [];
 
-            if (is_object($state)) {
-                $state = match (true) {
-                    method_exists($state, 'toString') => $state->toString(),
-                    method_exists($state, '__toString') => $state->__toString(),
-                    function_exists('enum_exists') && $state instanceof UnitEnum => $state->value,
-                };
+            foreach ($arrayState as $state) {
+                $state = $column->formatStateUsing === null
+                    ? $state
+                    : $this->evaluate($column->formatStateUsing->getClosure(), [
+                        'column'   => $column->tableColumn,
+                        'livewire' => $this->getLivewire(),
+                        'record'   => $record,
+                        'state'    => $state,
+                    ]);
+
+                if (is_object($state)) {
+                    $state = match (true) {
+                        method_exists($state, 'toString') => $state->toString(),
+                        method_exists($state, '__toString') => $state->__toString(),
+                        function_exists('enum_exists') && $state instanceof UnitEnum => $state->value,
+                    };
+                }
+            
+                $formattedArrayState[] = $state;
             }
 
-            $result[$key] = $state;
+            $result[$key] = implode("\n", $formattedArrayState);
         }
 
         return $result;
