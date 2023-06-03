@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "maatwebsite/excel": "^3.1",
         "anourvalar/eloquent-serialize": "^1.2",
         "spatie/laravel-package-tools": "^1.9"

@@ -35,14 +35,17 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
             ->hasCommands([PruneExportsCommand::class])
             ->hasRoutes(['web'])
             ->hasTranslations();
+    }
+
+    public function bootingPackage()
+    {
+        Filament::serving($this->sendExportFinishedNotification(...));
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
             $schedule->command(PruneExportsCommand::class)->daily();
         });
 
         Event::listen(ExportFinishedEvent::class, [$this, 'cacheExportFinishedNotification']);
-
-        //Filament::serving(Closure::fromCallable([$this, 'sendExportFinishedNotification']));
     }
 
     public function sendExportFinishedNotification(): void
