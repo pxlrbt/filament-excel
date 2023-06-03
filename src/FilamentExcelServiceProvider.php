@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 
@@ -63,7 +64,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                 continue;
             }
 
-            Notification::make('filament-excel:exports:'.md5($export['filename']))
+            Notification::make(data_get($export, 'id'))
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
@@ -89,7 +90,11 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
         $key = $this->getNotificationCacheKey($event->userId);
 
         $exports = cache()->pull($key, []);
-        $exports[] = ['filename' => $event->filename, 'userId' => $event->userId];
+        $exports[] = [
+            'id' => Str::uuid(),
+            'filename' => $event->filename,
+            'userId' => $event->userId,
+        ];
 
         cache()->put($key, $exports);
     }
