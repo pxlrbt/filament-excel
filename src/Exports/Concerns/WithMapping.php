@@ -50,17 +50,22 @@ trait WithMapping
 
         foreach ($columns as $column) {
             $key = $column->getName();
+
+            if ($this->columnsSource === 'table') {
             $column->tableColumn->record($record);
-            
+            }
+
+            $state = $this->columnsSource === 'table' ? $column->tableColumn->getStateFromRecord() : data_get($record, $key);
+
             $arrayState = $column->getStateUsing === null
-                ? $column->tableColumn->getStateFromRecord()
+                ? $state
                 : $this->evaluate($column->getStateUsing->getClosure(), [
                     'column' => $column->tableColumn,
                     'livewire' => $this->getLivewire(),
                     'record' => $record,
                 ]);
 
-            if (is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
+            if ($this->columnsSource === 'table' && is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
                 $arrayState = explode($separator, $arrayState);
                 $arrayState = (count($arrayState) === 1 && blank($arrayState[0])) ?
                     [] :
@@ -87,7 +92,7 @@ trait WithMapping
                         function_exists('enum_exists') && $state instanceof UnitEnum => $state->value,
                     };
                 }
-            
+
                 $formattedArrayState[] = $state;
             }
 
