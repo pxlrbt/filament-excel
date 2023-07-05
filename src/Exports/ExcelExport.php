@@ -190,7 +190,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     {
         $this->livewire = $livewire;
         $this->modelKeyName = $this->getModelInstance()->getQualifiedKeyName();
-        $this->recordIds = $records?->pluck(Str::afterLast($this->modelKeyName, '.'))->toArray() ?? [];
+        $this->recordIds = $records?->pluck($this->getModelInstance()->getKeyName())->toArray() ?? [];
 
         $this->formData = $formData;
 
