@@ -20,7 +20,7 @@ trait WithMapping
             // If user didn't specify a custom except array, use the hidden columns.
             // User can override this by passing an empty array ->except([])
             // When user specifies with only(), ignore if the column is hidden or not.
-            if ($except === null && (! is_array($only) || count($only) === 0)) {
+            if ($except === null && (!is_array($only) || count($only) === 0)) {
                 $except = $row->getHidden();
             }
         }
@@ -37,7 +37,7 @@ trait WithMapping
     }
 
     /**
-     * @param  Model|mixed  $row
+     * @param Model|mixed $row
      */
     public function map($record): array
     {
@@ -52,17 +52,18 @@ trait WithMapping
             $key = $column->getName();
 
             if ($this->columnsSource === 'table') {
-            $column->tableColumn->record($record);
+                $column->tableColumn->record($record);
+                $state = $column->tableColumn->getStateFromRecord();
+            } else {
+                $state = data_get($record, $key);
             }
-
-            $state = $this->columnsSource === 'table' ? $column->tableColumn->getStateFromRecord() : data_get($record, $key);
 
             $arrayState = $column->getStateUsing === null
                 ? $state
                 : $this->evaluate($column->getStateUsing->getClosure(), [
-                    'column' => $column->tableColumn,
+                    'column'   => $column->tableColumn,
                     'livewire' => $this->getLivewire(),
-                    'record' => $record,
+                    'record'   => $record,
                 ]);
 
             if ($this->columnsSource === 'table' && is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
@@ -71,7 +72,7 @@ trait WithMapping
                     [] :
                     $arrayState;
             }
-            
+
             $arrayState = Arr::wrap($arrayState);
             $formattedArrayState = [];
 
