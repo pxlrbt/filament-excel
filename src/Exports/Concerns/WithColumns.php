@@ -129,7 +129,7 @@ trait WithColumns
         $livewire = $this->getLivewire();
 
         if ($livewire instanceof HasTable) {
-            $columns = collect(invade($this->getLivewire())->getTableColumns());
+            $columns = collect(invade($this->getLivewire())->getTable()->getColumns());
         } else {
             $table = $this->getResourceClass()::table(new Table());
             $columns = collect($table->getColumns());
