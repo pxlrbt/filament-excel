@@ -68,7 +68,7 @@ class FilamentExcelServiceProvider extends ServiceProvider
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
-                ->icon('heroicon-o-download')
+                ->icon('heroicon-o-arrow-down-tray')
                 ->actions([
                     Action::make('download')
                         ->label(__('filament-excel::notifications.download_ready.download'))
