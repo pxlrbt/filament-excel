@@ -5,7 +5,7 @@ namespace pxlrbt\FilamentExcel\Exports\Concerns;
 use Closure;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
@@ -91,8 +91,8 @@ trait WithColumns
 
     protected function createFieldMappingFromForm(): Collection
     {
-        $form = $this->getResourceClass()::form(new Form());
-        $components = collect($form->getSchema());
+        $form = $this->getResourceClass()::form(new Form($this->getLivewire()));
+        $components = collect($form->getComponents());
         $extracted = collect();
 
         while (($component = $components->shift()) !== null) {
@@ -144,12 +144,17 @@ trait WithColumns
             )
             ->mapWithKeys(function (Tables\Columns\Column $column) {
                 $clonedCol = clone $column;
+
+                // Reset for serialization
+                $clonedCol->table(null);
+
+                // Invade for protected properties
                 $invadedColumn = invade($clonedCol);
 
                 $exportColumn = Column::make($column->getName())
                     ->heading($column->getLabel())
                     ->getStateUsing($invadedColumn->getStateUsing)
-                    ->tableColumn($column);
+                    ->tableColumn($clonedCol);
 
                 rescue(fn () => $exportColumn->formatStateUsing($invadedColumn->formatStateUsing), report: false);
 

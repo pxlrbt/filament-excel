@@ -2,7 +2,6 @@
 
 namespace pxlrbt\FilamentExcel;
 
-use Closure;
 use Filament\Facades\Filament;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
@@ -71,7 +70,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
-                ->icon('heroicon-arrow-down-tray')
+                ->icon('heroicon-o-arrow-down-tray')
                 ->actions([
                     Action::make('download')
                         ->label(__('filament-excel::notifications.download_ready.download'))
