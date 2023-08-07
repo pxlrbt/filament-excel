@@ -17,7 +17,11 @@ https://user-images.githubusercontent.com/22632550/174591523-831df501-76d5-456a-
 
 Install via Composer. This will download the package and [Laravel Excel](https://laravel-excel.com/).
 
-**Requires PHP 8.0 and Filament 2.0**
+| Plugin Version | Filament Version | PHP Version |
+|----------------|-----------------|-------------|
+| 1.x            | 2.x   | \> 8.0      |
+| 2.x            | 3.x             | \> 8.1      |
+
 
 ```bash
 composer require pxlrbt/filament-excel
