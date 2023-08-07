@@ -5,7 +5,7 @@ namespace pxlrbt\FilamentExcel\Exports\Concerns;
 use Closure;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
@@ -91,8 +91,8 @@ trait WithColumns
 
     protected function createFieldMappingFromForm(): Collection
     {
-        $form = $this->getResourceClass()::form(new Form());
-        $components = collect($form->getSchema());
+        $form = $this->getResourceClass()::form(new Form($this->getLivewire()));
+        $components = collect($form->getComponents());
         $extracted = collect();
 
         while (($component = $components->shift()) !== null) {
@@ -129,7 +129,7 @@ trait WithColumns
         $livewire = $this->getLivewire();
 
         if ($livewire instanceof HasTable) {
-            $columns = collect(invade($this->getLivewire())->getTableColumns());
+            $columns = collect($livewire->getTable()->getColumns());
         } else {
             $table = $this->getResourceClass()::table(new Table());
             $columns = collect($table->getColumns());
@@ -137,19 +137,21 @@ trait WithColumns
 
         return $columns
             ->when(
-                $livewire->hasToggleableTableColumns(),
+                $livewire->getTable()->hasToggleableColumns(),
                 fn ($collection) => $collection->reject(
                     fn (Tables\Columns\Column $column) => $livewire->isTableColumnToggledHidden($column->getName())
                 )
             )
             ->mapWithKeys(function (Tables\Columns\Column $column) {
                 $clonedCol = clone $column;
+
+                // Invade for protected properties
                 $invadedColumn = invade($clonedCol);
 
                 $exportColumn = Column::make($column->getName())
                     ->heading($column->getLabel())
                     ->getStateUsing($invadedColumn->getStateUsing)
-                    ->tableColumn($column);
+                    ->tableColumn($clonedCol);
 
                 rescue(fn () => $exportColumn->formatStateUsing($invadedColumn->formatStateUsing), report: false);
 
