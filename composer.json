@@ -18,12 +18,11 @@
     ],
     "require": {
         "php": "^8.1",
+        "filament/filament": "^3.0.0-stable",
         "maatwebsite/excel": "^3.1",
-        "anourvalar/eloquent-serialize": "^1.2",
-        "spatie/laravel-package-tools": "^1.9"
+        "anourvalar/eloquent-serialize": "^1.2"
     },
     "require-dev": {
-        "filament/filament": "v3.0.0-alpha100",
         "laravel/pint": "^1.10"
     },
     "autoload": {
@@ -41,6 +40,5 @@
     "scripts": {
         "pint": "vendor/bin/pint"
     },
-    "minimum-stability": "dev",
     "prefer-stable": true
 }

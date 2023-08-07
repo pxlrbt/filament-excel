@@ -145,9 +145,6 @@ trait WithColumns
             ->mapWithKeys(function (Tables\Columns\Column $column) {
                 $clonedCol = clone $column;
 
-                // Reset for serialization
-                $clonedCol->table(null);
-
                 // Invade for protected properties
                 $invadedColumn = invade($clonedCol);
 

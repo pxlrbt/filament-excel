@@ -98,8 +98,8 @@ class Column
             }
         }
 
-        // $tableColumn->getStateUsing(null);
-        // $tableColumn->formatStateUsing(null);
+        // Remove other unsafe properties
+        $clone->table(null);
 
         $this->tableColumn = $clone;
 
