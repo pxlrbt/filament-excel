@@ -10,6 +10,7 @@ use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use pxlrbt\FilamentExcel\Exports\Concerns\CanIgnoreFormatting;
 use function Livewire\invade;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -46,6 +47,7 @@ class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize,
     use AskForFilename;
     use AskForWriterType;
     use CanModifyQuery;
+    use CanIgnoreFormatting;
     use Except;
     use Only;
     use WithChunkSize;
