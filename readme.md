@@ -1,16 +1,27 @@
+<div class="filament-hidden">
+
 ![header](./.github/resources/header.png)
 
+</div>
+
 # Filament Excel
+
+<div class="filament-hidden">
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/pxlrbt/filament-excel.svg?include_prereleases)](https://packagist.org/packages/pxlrbt/filament-excel)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pxlrbt/filament-excel/code-style.yml?branch=main&label=Code%20style&style=flat-square)
 [![Total Downloads](https://img.shields.io/packagist/dt/pxlrbt/filament-excel.svg)](https://packagist.org/packages/pxlrbt/filament-excel)
 
+</div>
+
 Easily configure your Excel exports in Filament via a bulk or page action.
 
+<div class="filament-hidden">
 
 https://user-images.githubusercontent.com/22632550/174591523-831df501-76d5-456a-b12e-f6d8316fb673.mp4
+
+</div>
 
 
 ## Installation
@@ -260,7 +271,6 @@ ExportAction::make()->exports([
     ]),
 ])
 ```
-
 
 ### User input
 
