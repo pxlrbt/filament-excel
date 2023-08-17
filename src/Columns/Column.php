@@ -98,8 +98,10 @@ class Column
             }
         }
 
-        // Remove other unsafe properties
+        // Reset other properties
         $clone->table(null);
+        $clone->getStateUsing(null);
+        invade($clone)->summarizers = [];
 
         $this->tableColumn = $clone;
 
