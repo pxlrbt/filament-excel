@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use pxlrbt\FilamentExcel\Columns\Column;
-use UnitEnum;
+use pxlrbt\FilamentExcel\Exports\Formatters\Formatter;
 
 trait WithMapping
 {
@@ -51,8 +51,9 @@ trait WithMapping
 
         foreach ($columns as $column) {
             $state = $this->getState($column, $record);
+            $state =  $this->applyFormatStateUsing($column, $record, $state);
 
-            $result[$column->getName()] = $this->formatState($column, $record, $state);
+            $result[$column->getName()] = app(Formatter::class)->format($state);
         }
 
         return $result;
@@ -87,9 +88,9 @@ trait WithMapping
         return $arrayState;
     }
 
-    private function formatState(Column $column, $record, $state)
+    private function applyFormatStateUsing(Column $column, $record, $state)
     {
-        $formattedArrayState = [];
+        $formattedState = [];
 
         if ($this->shouldIgnoreFormattingForColumn($column)) {
             return $state;
@@ -105,17 +106,9 @@ trait WithMapping
                     'state'    => $state,
                 ]);
 
-            if (is_object($state)) {
-                $state = match (true) {
-                    method_exists($state, 'toString') => $state->toString(),
-                    method_exists($state, '__toString') => $state->__toString(),
-                    function_exists('enum_exists') && $state instanceof UnitEnum => $state->value,
-                };
-            }
-
-            $formattedArrayState[] = $state;
+            $formattedState[] = $state;
         }
 
-        return implode("\n", $formattedArrayState);
+        return $formattedState;
     }
 }
