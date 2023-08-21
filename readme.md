@@ -316,6 +316,7 @@ class AppServiceProvider extends ServiceProvider
     }
 ```
 
+
 ### User input
 
 You can let the user pick a filename and writer type by using `->askForFilename()` and `->askForWriterType()`:
