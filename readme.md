@@ -272,6 +272,51 @@ ExportAction::make()->exports([
 ])
 ```
 
+#### Ignore Formatting
+
+When using `->fromForm()`/`->fromTable()` the formatting is resolved from your table or form definition. If you don't want to overwrite every columns `->formatStateUsing()` method, you can ignore the formatting altogher or for specific columns by using `->ignoreFormatting()`:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
+
+ExportAction::make()->exports([
+    // Ignore all formatting
+    ExcelExport::make()->fromTable()->ignoreFormatting()
+    
+    // Ignore specific columns
+    ExcelExport::make()->fromTable()->ignoreFormatting([
+        'created_at', 'updated_at',
+    ]),
+    
+    // Ignore columns based on Closure
+    ExcelExport::make()->fromTable()->ignoreFormatting(
+        fn (Column $column) => Str::startsWith($column->getName(), 'customer_')
+    ),
+])
+```
+
+#### Formatters
+
+When the state of column is not a string, it is run through a formatter even if you use `->ignoreFormatting()` to make sure it's in the right format for Excel.
+
+Currently there are 3 formatters: `ArrayFormatter`, `EnumFormatter` and `ObjectFormatter`. You can swap out any implementation via Laravel's service container, for example to use a different delimiter for the `ArrayFormatter`:
+
+```php
+use pxlrbt\FilamentExcel\Exports\Formatters\ArrayFormatter;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        App::bind(ArrayFormatter::class, function () {
+            return new ArrayFormatter(';');
+        });
+    }
+```
+
+
 ### User input
 
 You can let the user pick a filename and writer type by using `->askForFilename()` and `->askForWriterType()`:
