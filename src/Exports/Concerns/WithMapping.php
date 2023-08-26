@@ -21,7 +21,7 @@ trait WithMapping
             // If user didn't specify a custom except array, use the hidden columns.
             // User can override this by passing an empty array ->except([])
             // When user specifies with only(), ignore if the column is hidden or not.
-            if ($except === null && (!is_array($only) || count($only) === 0)) {
+            if ($except === null && (! is_array($only) || count($only) === 0)) {
                 $except = $row->getHidden();
             }
         }
@@ -38,7 +38,7 @@ trait WithMapping
     }
 
     /**
-     * @param Model|mixed $record
+     * @param  Model|mixed  $record
      */
     public function map($record): array
     {
@@ -51,7 +51,7 @@ trait WithMapping
 
         foreach ($columns as $column) {
             $state = $this->getState($column, $record);
-            $state =  $this->applyFormatStateUsing($column, $record, $state);
+            $state = $this->applyFormatStateUsing($column, $record, $state);
 
             $result[$column->getName()] = app(Formatter::class)->format($state);
         }
@@ -73,9 +73,9 @@ trait WithMapping
         $arrayState = $column->getStateUsing === null
             ? $state
             : $this->evaluate($column->getStateUsing->getClosure(), [
-                'column'   => $column->tableColumn,
+                'column' => $column->tableColumn,
                 'livewire' => $this->getLivewire(),
-                'record'   => $record,
+                'record' => $record,
             ]);
 
         if ($this->columnsSource === 'table' && is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
@@ -100,10 +100,10 @@ trait WithMapping
             $state = $column->formatStateUsing === null
                 ? $state
                 : $this->evaluate($column->formatStateUsing->getClosure(), [
-                    'column'   => $column->tableColumn,
+                    'column' => $column->tableColumn,
                     'livewire' => $this->getLivewire(),
-                    'record'   => $record,
-                    'state'    => $state,
+                    'record' => $record,
+                    'state' => $state,
                 ]);
 
             $formattedState[] = $state;

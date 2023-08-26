@@ -6,14 +6,14 @@ use Illuminate\Support\Collection;
 
 class Formatter
 {
-    static protected $formatters = [
+    protected static $formatters = [
         ArrayFormatter::class,
         EnumFormatter::class,
         ObjectFormatter::class,
     ];
 
     /**
-     * @param mixed $state
+     * @param  mixed  $state
      * @return mixed
      */
     public function format($state)

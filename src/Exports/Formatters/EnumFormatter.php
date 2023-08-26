@@ -13,6 +13,6 @@ class EnumFormatter implements FormatterInterface
 
     public function format($state): string
     {
-         return $state->value;
+        return $state->value;
     }
 }

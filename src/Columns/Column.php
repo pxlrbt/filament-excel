@@ -84,7 +84,7 @@ class Column
 
     public function tableColumn(TableColumn $tableColumn): static
     {
-        $clone = clone($tableColumn);
+        $clone = clone $tableColumn;
 
         // Try to remove all closures
         foreach ((new ReflectionClass($clone))->getProperties() as $property) {

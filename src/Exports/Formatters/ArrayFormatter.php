@@ -6,8 +6,7 @@ class ArrayFormatter implements FormatterInterface
 {
     public function __construct(
         public string $delimiter = ','
-    )
-    {
+    ) {
         //
     }
 
