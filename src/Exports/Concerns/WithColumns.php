@@ -11,8 +11,9 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
-use function Livewire\invade;
 use pxlrbt\FilamentExcel\Columns\Column;
+
+use function Livewire\invade;
 
 trait WithColumns
 {
@@ -24,7 +25,7 @@ trait WithColumns
 
     protected ?string $columnsSource = null;
 
-    public function withColumns(Closure|array|string|null $columns = null): static
+    public function withColumns(Closure|array|string $columns = null): static
     {
         if (is_callable($columns)) {
             $this->columns = $columns;

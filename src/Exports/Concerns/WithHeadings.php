@@ -7,7 +7,7 @@ use pxlrbt\FilamentExcel\Columns\Column;
 
 trait WithHeadings
 {
-    public array|null $headings = null;
+    public ?array $headings = null;
 
     protected Closure|bool $withoutHeadings = false;
 
