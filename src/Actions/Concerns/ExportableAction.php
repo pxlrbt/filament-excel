@@ -23,19 +23,18 @@ trait ExportableAction
         $this->icon('heroicon-o-arrow-down-tray');
         $this->action(Closure::fromCallable([$this, 'handleExport']));
 
+        $this->form(function () {
+            if ($this->exports->count() > 1 || $this->getExportFormSchemas()->count() > 0) {
+                return [
+                    ...$this->getSelectExportField(),
+                    ...$this->getExportFormSchemas(),
+                ];
+            }
+
+            return [];
+        });
+
         $this->exports = collect([ExcelExport::make('export')->fromTable()]);
-    }
-
-    public function getFormSchema(): array
-    {
-        if ($this->exports->count() > 1 || $this->getExportFormSchemas()->count() > 0) {
-            return [
-                ...$this->getSelectExportField(),
-                ...$this->getExportFormSchemas(),
-            ];
-        }
-
-        return [];
     }
 
     protected function getSelectExportField(): array
