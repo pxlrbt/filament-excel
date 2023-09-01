@@ -45,6 +45,10 @@ trait WithColumns
         $columns = $this->evaluate($this->generatedColumns);
 
         foreach ($this->evaluate($this->columns) as $column) {
+            if($this->columnsSource === 'table') {
+                $column->tableColumn = $columns[$column->getName()]->tableColumn;
+            }
+
             $columns[$column->getName()] = $column;
         }
 
