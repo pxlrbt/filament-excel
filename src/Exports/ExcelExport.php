@@ -37,28 +37,28 @@ use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
 use function Livewire\invade;
 
-class ExcelExport implements HasMapping, HasHeadings, FromQuery, ShouldAutoSize, WithColumnWidths, WithColumnFormatting, WithCustomChunkSize
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize
 {
-    use Exportable, CanQueue  {
+    use AskForFilename;
+    use AskForWriterType;
+    use CanIgnoreFormatting;
+    use CanModifyQuery;
+    use CanQueue, Exportable  {
         Exportable::download as downloadExport;
         Exportable::queue as queueExport;
         CanQueue::queue insteadof Exportable;
     }
     use EvaluatesClosures;
-    use AskForFilename;
-    use AskForWriterType;
-    use CanModifyQuery;
-    use CanIgnoreFormatting;
     use Except;
     use Only;
     use WithChunkSize;
+    use WithColumnFormats;
     use WithColumns;
     use WithFilename;
     use WithHeadings;
-    use WithWriterType;
     use WithMapping;
     use WithWidths;
-    use WithColumnFormats;
+    use WithWriterType;
 
     protected string $name;
 
