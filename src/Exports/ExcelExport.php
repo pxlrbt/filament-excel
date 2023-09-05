@@ -48,7 +48,9 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         Exportable::queue as queueExport;
         CanQueue::queue insteadof Exportable;
     }
-    use EvaluatesClosures;
+    use EvaluatesClosures {
+        EvaluatesClosures::evaluate as parentEvaluate;
+    }
     use Except;
     use Only;
     use WithChunkSize;
@@ -269,6 +271,16 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
                     ? $query->whereIn($this->modelKeyName, $this->recordIds)
                     : $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
             );
+    }
+
+    public function evaluate(mixed $value, array $parameters = []): mixed
+    {
+        $namedInjections = [
+            ...$parameters,
+            ...$this->getDefaultEvaluationParameters(),
+        ];
+
+        return $this->parentEvaluate($value, $namedInjections);
     }
 
     protected function getDefaultEvaluationParameters(): array
