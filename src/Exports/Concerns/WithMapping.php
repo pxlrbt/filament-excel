@@ -63,7 +63,7 @@ trait WithMapping
     {
         $key = $column->getName();
 
-        if ($this->columnsSource === 'table') {
+        if ($this->columnsSource === 'table' && $column->tableColumn !== null) {
             $column->tableColumn->record($record);
             $state = $column->tableColumn->getStateFromRecord();
         } else {
@@ -78,7 +78,7 @@ trait WithMapping
                 'record' => $record,
             ]);
 
-        if ($this->columnsSource === 'table' && is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
+        if ($this->columnsSource === 'table' && $column->tableColumn !== null && is_string($arrayState) && ($separator = $column->tableColumn->getSeparator())) {
             $arrayState = explode($separator, $arrayState);
             $arrayState = (count($arrayState) === 1 && blank($arrayState[0])) ?
                 [] :
