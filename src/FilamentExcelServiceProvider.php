@@ -62,7 +62,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                 ['path' => $export['filename']]
             );
 
-            if (! Storage::exists('filament-excel/'.$export['filename'])) {
+            if (! Storage::disk('filament-excel')->exists($export['filename'])) {
                 continue;
             }
 
