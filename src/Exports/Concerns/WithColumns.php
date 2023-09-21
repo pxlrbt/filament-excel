@@ -42,14 +42,29 @@ trait WithColumns
 
     public function getColumns(): array
     {
-        $columns = $this->evaluate($this->generatedColumns);
+        $generatedColumns = $this->evaluate($this->generatedColumns);
+        $withColumns = $this->evaluate($this->columns);
 
-        foreach ($this->evaluate($this->columns) as $column) {
-            if ($this->columnsSource === 'table' && array_key_exists($column->getName(), $columns)) {
-                $column->tableColumn = $columns[$column->getName()]->tableColumn;
+        if ($this->columnsSource === 'table' && count($withColumns) > 0) {
+            $generatedColumnsKeys = array_keys($generatedColumns);
+            $withColumnsKeys = array_map(fn ($column) => $column->getName(), $withColumns);
+
+            $columnDiffKeys = array_diff($generatedColumnsKeys, $withColumnsKeys);
+
+            $columns = array_combine($withColumnsKeys, $withColumns);
+            foreach ($columnDiffKeys as $key) {
+                if (isset($generatedColumns[$key])) {
+                    $columns[$key] = $generatedColumns[$key];
+                } else if (isset($withColumns[$key])) {
+                    $columns[$key] = $withColumns[$key];
+                }
             }
+        } else {
+            $columns = $generatedColumns;
 
-            $columns[$column->getName()] = $column;
+            foreach ($withColumns as $column) {
+                $columns[$column->getName()] = $column;
+            }
         }
 
         return $columns;
