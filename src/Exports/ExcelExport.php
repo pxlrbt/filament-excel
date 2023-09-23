@@ -16,8 +16,10 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
+use Maatwebsite\Excel\Events\AfterSheet;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanIgnoreFormatting;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
@@ -37,7 +39,7 @@ use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
 use function Livewire\invade;
 
-class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents
 {
     use AskForFilename;
     use AskForWriterType;
@@ -88,6 +90,8 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     protected ?string $modelKeyName;
 
     protected array $recordIds = [];
+
+    protected $isRTL = false;
 
     public function __construct($name)
     {
@@ -293,5 +297,26 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             'recordIds' => $this->getRecordIds(),
             'query' => $this->getQuery(),
         ];
+    }
+
+     public function rtlDirections()
+    {
+        $this->isRTL = true;
+        return $this;
+    }
+
+     /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        if ($this->isRTL){
+            return [
+                BeforeSheet::class    => function(BeforeSheet $event) {
+                    $event->sheet->getDelegate()->setRightToLeft(true);
+                },
+            ];
+        }
+        return [];
     }
 }
