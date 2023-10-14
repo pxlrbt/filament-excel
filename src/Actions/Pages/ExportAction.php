@@ -21,7 +21,7 @@ class ExportAction extends Action
     {
         $this->parentSetUp();
 
-        $this->button();
+        $this->defaultView(static::BUTTON_VIEW);
         $this->icon('heroicon-o-arrow-down-tray');
 
         $this->exports = collect([
