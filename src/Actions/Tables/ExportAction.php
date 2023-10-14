@@ -21,7 +21,7 @@ class ExportAction extends Action
     {
         $this->parentSetUp();
 
-        $this->button();
+        $this->defaultView(static::BUTTON_VIEW);
 
         $this->exports = collect([
             ExcelExport::make()->fromTable(),
