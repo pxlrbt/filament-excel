@@ -213,7 +213,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
 
         $this->prepareQueuedExport();
 
-        $filename = Str::uuid().'-'.$this->getFilename();
+        $filename = Str::uuid() . '-' . $this->getFilename();
         $userId = auth()->id();
 
         $this
