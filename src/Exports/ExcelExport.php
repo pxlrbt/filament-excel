@@ -34,7 +34,6 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
-
 use function Livewire\invade;
 
 class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize
@@ -43,7 +42,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     use AskForWriterType;
     use CanIgnoreFormatting;
     use CanModifyQuery;
-    use CanQueue, Exportable  {
+    use CanQueue, Exportable {
         Exportable::download as downloadExport;
         Exportable::queue as queueExport;
         CanQueue::queue insteadof Exportable;
@@ -138,6 +137,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         $this->livewire = app($this->livewireClass);
 
         if ($this->livewire instanceof RelationManager) {
+            $this->livewire->pageClass = $this->livewireClass;
             $this->livewire->ownerRecord = $this->livewireOwnerRecord;
         }
 
@@ -169,7 +169,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
 
         $livewire = $this->getLivewire();
 
-        if ($livewire === null || ! method_exists($livewire, 'getResource')) {
+        if ($livewire === null || !method_exists($livewire, 'getResource')) {
             return null;
         }
 
@@ -207,7 +207,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         $this->resolveFilename();
         $this->resolveWriterType();
 
-        if (! $this->isQueued()) {
+        if (!$this->isQueued()) {
             return $this->downloadExport($this->getFilename(), $this->getWriterType());
         }
 
@@ -218,7 +218,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
 
         $this
             ->queueExport($filename, 'filament-excel', $this->getWriterType())
-            ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId)]);
+            ->chain([fn() => ExportFinishedEvent::dispatch($filename, $userId)]);
 
         Notification::make()
             ->title(__('filament-excel::notifications.queued.title'))
@@ -267,7 +267,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         return $this->query = $query
             ->when(
                 $this->recordIds,
-                fn ($query) => $model->getKeyType() === 'string'
+                fn($query) => $model->getKeyType() === 'string'
                     ? $query->whereIn($this->modelKeyName, $this->recordIds)
                     : $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
             );
