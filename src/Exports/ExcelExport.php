@@ -34,6 +34,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
+
 use function Livewire\invade;
 
 class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize
@@ -218,7 +219,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
 
         $this
             ->queueExport($filename, 'filament-excel', $this->getWriterType())
-            ->chain([fn() => ExportFinishedEvent::dispatch($filename, $userId)]);
+            ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId)]);
 
         Notification::make()
             ->title(__('filament-excel::notifications.queued.title'))
@@ -267,7 +268,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         return $this->query = $query
             ->when(
                 $this->recordIds,
-                fn($query) => $model->getKeyType() === 'string'
+                fn ($query) => $model->getKeyType() === 'string'
                     ? $query->whereIn($this->modelKeyName, $this->recordIds)
                     : $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
             );
