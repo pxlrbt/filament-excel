@@ -138,6 +138,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         $this->livewire = app($this->livewireClass);
 
         if ($this->livewire instanceof RelationManager) {
+            $this->livewire->pageClass = $this->livewireClass;
             $this->livewire->ownerRecord = $this->livewireOwnerRecord;
         }
 
