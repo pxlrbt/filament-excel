@@ -2,7 +2,7 @@
 
 namespace pxlrbt\FilamentExcel\Actions\Tables;
 
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
