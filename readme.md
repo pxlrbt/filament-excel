@@ -74,7 +74,7 @@ class UserResource extends Resource
 }
 ```
 
-**Example for table package**
+**Example for _separate_ table package**
 
 ```php
 <?php
@@ -90,6 +90,7 @@ public function getTableBulkActions()
     ];
 }
 ```
+
 
 ## Usage
 
