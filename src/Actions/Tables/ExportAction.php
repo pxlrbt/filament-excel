@@ -34,6 +34,7 @@ class ExportAction extends Action
 
         return app()->call([$exportable, 'hydrate'], [
             'livewire' => $this->getLivewire(),
+            'records' => collect([$this->getRecord()]),               
             'formData' => data_get($data, $exportable->getName()),
         ])->export();
     }
