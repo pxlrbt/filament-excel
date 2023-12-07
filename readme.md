@@ -1,6 +1,6 @@
 <div class="filament-hidden">
 
-![header](./.github/resources/header.png)
+![header](./.github/resources/pxlrbt-excel.png)
 
 </div>
 
