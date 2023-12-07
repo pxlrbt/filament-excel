@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Excel;
 
 trait AskForWriterType
 {
-    public function askForWriterType(string $default = null, array $options = null, string $label = null, callable $callback = null): self
+    public function askForWriterType(?string $default = null, ?array $options = null, ?string $label = null, ?callable $callback = null): self
     {
         $options = $options ?: [
             Excel::XLS => 'XLS',
