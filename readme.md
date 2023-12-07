@@ -19,7 +19,7 @@ Easily configure your Excel exports in Filament via a bulk or page action.
 
 <div class="filament-hidden">
 
-https://user-images.githubusercontent.com/22632550/174591523-831df501-76d5-456a-b12e-f6d8316fb673.mp4
+[Demo Video](https://user-images.githubusercontent.com/22632550/174591523-831df501-76d5-456a-b12e-f6d8316fb673.mp4)
 
 </div>
 
