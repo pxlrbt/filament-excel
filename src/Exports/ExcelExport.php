@@ -34,6 +34,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
+use pxlrbt\FilamentExcel\Interactions\AskForConfirmation;
 
 use function Livewire\invade;
 
@@ -41,6 +42,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
 {
     use AskForFilename;
     use AskForWriterType;
+    use AskForConfirmation;
     use CanIgnoreFormatting;
     use CanModifyQuery;
     use CanQueue, Exportable  {

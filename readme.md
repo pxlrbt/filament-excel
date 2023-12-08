@@ -346,6 +346,18 @@ ExportAction::make()->exports([
 ])
 ```
 
+You can also ask the user to confirm before starting the export:
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
+ExportAction::make()->exports([
+    ExcelExport::make()
+        ->askForConfirmation('Confirm Export?', 'This may take a while. Please do not start multiple exports at the same time.')
+])
+```
+
 ### Modify the query
 
 You can modify the query that is used to retrieve the model by using `->modifyQueryUsing()`:
