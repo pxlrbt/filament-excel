@@ -16,8 +16,10 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
+use Maatwebsite\Excel\Events\BeforeSheet;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanIgnoreFormatting;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
@@ -35,9 +37,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
-use function Livewire\invade;
-
-class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents
 {
     use AskForFilename;
     use AskForWriterType;
@@ -88,6 +88,8 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     protected ?string $modelKeyName;
 
     protected array $recordIds = [];
+
+    protected bool $isRtl = false;
 
     public function __construct($name)
     {
@@ -297,5 +299,25 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             'recordIds' => $this->getRecordIds(),
             'query' => $this->getQuery(),
         ];
+    }
+
+    public function registerEvents(): array
+    {
+        if ($this->isRtl) {
+            return [
+                BeforeSheet::class => function (BeforeSheet $event) {
+                    $event->sheet->getDelegate()->setRightToLeft(true);
+                },
+            ];
+        }
+
+        return [];
+    }
+
+    public function rtl(bool $isRtl = true): static
+    {
+        $this->isRtl = $isRtl;
+
+        return $this;
     }
 }
