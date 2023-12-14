@@ -262,7 +262,10 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             : $this->getModelClass()::query();
 
         if ($this->modifyQueryUsing) {
-            $query = $this->modifyQueryUsing->getClosure()($query);
+            $query = app()->call($this->modifyQueryUsing->getClosure(), [
+                'query' => $query,
+                'livewire' => $livewire,
+            ]);
         }
 
         return $this->query = $query
