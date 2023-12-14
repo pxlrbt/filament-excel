@@ -61,6 +61,8 @@ trait WithColumns
 
         $this->columnsSource = 'table';
 
+        $this->useTableQuery();
+
         return $this;
     }
 
