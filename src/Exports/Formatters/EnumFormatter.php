@@ -2,6 +2,7 @@
 
 namespace pxlrbt\FilamentExcel\Exports\Formatters;
 
+use Filament\Support\Contracts\HasLabel;
 use UnitEnum;
 
 class EnumFormatter implements FormatterInterface
@@ -13,6 +14,10 @@ class EnumFormatter implements FormatterInterface
 
     public function format($state): string
     {
+        if ($state instanceof HasLabel) {
+            return $state->getLabel();
+        }
+
         return $state->value;
     }
 }
