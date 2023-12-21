@@ -144,10 +144,10 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             $this->livewire->ownerRecord = $this->livewireOwnerRecord;
         }
 
-        if($this->isQueued) {
+        if ($this->isQueued) {
             return $this->livewire;
         }
-        
+
         $this->livewire->bootedInteractsWithTable();
 
         return $this->livewire;
