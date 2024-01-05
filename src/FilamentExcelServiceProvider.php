@@ -66,7 +66,8 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                 continue;
             }
 
-            Notification::make(data_get($export, 'id'))
+            if (Filament::getCurrentPanel()->hasDatabaseNotifications()) {
+                Notification::make(data_get($export, 'id'))
                 ->title(__('filament-excel::notifications.download_ready.title'))
                 ->body(__('filament-excel::notifications.download_ready.body'))
                 ->success()
@@ -76,10 +77,24 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                         ->label(__('filament-excel::notifications.download_ready.download'))
                         ->url($url, shouldOpenInNewTab: true)
                         ->button()
-                        ->close(),
                 ])
-                ->persistent()
-                ->send();
+                ->sendToDatabase(auth()->user());
+            } else {
+                Notification::make(data_get($export, 'id'))
+                    ->title(__('filament-excel::notifications.download_ready.title'))
+                    ->body(__('filament-excel::notifications.download_ready.body'))
+                    ->success()
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->actions([
+                        Action::make('download')
+                            ->label(__('filament-excel::notifications.download_ready.download'))
+                            ->url($url, shouldOpenInNewTab: true)
+                            ->button()
+                            ->close(),
+                    ])
+                    ->persistent()
+                    ->send();
+            }
         }
     }
 
