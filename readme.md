@@ -268,7 +268,7 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 ExportAction::make()->exports([
     ExcelExport::make()->withColumns([
-        Column::make('currency')->format(NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE)
+        Column::make('currency')->format(NumberFormat::FORMAT_CURRENCY_EUR_INTEGER)
     ]),
 ])
 ```
