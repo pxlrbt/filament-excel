@@ -76,7 +76,8 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                         Action::make('download')
                             ->label(__('filament-excel::notifications.download_ready.download'))
                             ->url($url, shouldOpenInNewTab: true)
-                            ->button(),
+                            ->button()
+                            ->close(),                            
                     ])
                     ->sendToDatabase(auth()->user());
             } else {
