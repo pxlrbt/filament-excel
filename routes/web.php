@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('filament-excel/{path}', function (string $path) {
-    $path = Storage::disk('filament-excel')->path($path);
     $filename = substr($path, 37);
+    $path = Storage::disk('filament-excel')->path($path);
 
     return
         response()
