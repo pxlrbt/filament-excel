@@ -16,7 +16,7 @@ trait WithColumnFormats
 
     public function getColumnFormats(): array
     {
-        return $this->columnFormat ??= $this->getMapping($this->getModelInstance())
+        return $this->columnFormats ??= $this->getMapping($this->getModelInstance())
             ->values()
             ->mapWithKeys(fn (Column $column, $key) => [
                 Coordinate::stringFromColumnIndex($key + 1) => $this->evaluate($column->getFormat()),
