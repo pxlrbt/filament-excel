@@ -2,6 +2,7 @@
 
 namespace pxlrbt\FilamentExcel;
 
+use Closure;
 use Filament\Facades\Filament;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
@@ -17,6 +18,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class FilamentExcelServiceProvider extends PackageServiceProvider
 {
+    public static ?Closure $urlGenerator = null;
+
     public function register(): void
     {
         config()->set('filesystems.disks.filament-excel', [
@@ -56,11 +59,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
         }
 
         foreach ($exports as $export) {
-            $url = URL::temporarySignedRoute(
-                'filament-excel-download',
-                now()->addHours(24),
-                ['path' => $export['filename']]
-            );
+            $url = $this->generateUrlFor($export);
 
             if (! Storage::disk('filament-excel')->exists($export['filename'])) {
                 continue;
@@ -120,5 +119,23 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
     protected function getNotificationCacheKey($userId): string
     {
         return 'filament-excel:exports:'.$userId;
+    }
+
+    public static function generateUrlUsing(Closure $closure): void
+    {
+        static::$urlGenerator = $closure;
+    }
+
+    protected function generateUrlFor(array $export): string
+    {
+        if (is_null(static::$urlGenerator)) {
+            return URL::temporarySignedRoute(
+                'filament-excel-download',
+                now()->addHours(24),
+                ['path' => $export['filename']]
+            );
+        }
+
+        return call_user_func(static::$urlGenerator, $export);
     }
 }
