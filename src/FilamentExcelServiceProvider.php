@@ -2,24 +2,21 @@
 
 namespace pxlrbt\FilamentExcel;
 
-use Closure;
 use Filament\Facades\Filament;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
+use pxlrbt\FilamentExcel\Interfaces\GeneratesUrl;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class FilamentExcelServiceProvider extends PackageServiceProvider
 {
-    public static ?Closure $urlGenerator = null;
-
     public function register(): void
     {
         config()->set('filesystems.disks.filament-excel', [
@@ -36,6 +33,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
         $package->name('filament-excel')
             ->hasCommands([PruneExportsCommand::class])
             ->hasRoutes(['web'])
+            ->hasConfigFile('filament-excel')
             ->hasTranslations();
     }
 
@@ -121,21 +119,18 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
         return 'filament-excel:exports:'.$userId;
     }
 
-    public static function generateUrlUsing(Closure $closure): void
-    {
-        static::$urlGenerator = $closure;
-    }
-
     protected function generateUrlFor(array $export): string
     {
-        if (is_null(static::$urlGenerator)) {
-            return URL::temporarySignedRoute(
-                'filament-excel-download',
-                now()->addHours(24),
-                ['path' => $export['filename']]
+        $urlGenerator = config('filament-excel.url_generator_class', FilamentExcelUrlGenerator::class);
+
+        $urlGeneratorClass = app($urlGenerator);
+
+        if (! $urlGeneratorClass instanceof GeneratesUrl) {
+            throw new \InvalidArgumentException(
+                'The configured URL generator class must implement the "GeneratesUrl" interface.'
             );
         }
 
-        return call_user_func(static::$urlGenerator, $export);
+        return $urlGeneratorClass->generateUrl($export);
     }
 }
