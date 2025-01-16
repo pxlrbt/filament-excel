@@ -67,6 +67,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
             }
 
             if (Filament::getCurrentPanel()->hasDatabaseNotifications()) {
+                $previousLocale = App::getLocale();
                 app()->setLocale($export['locale']);
                 
                 Notification::make(data_get($export, 'id'))
@@ -82,6 +83,8 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
                             ->close(),
                     ])
                     ->sendToDatabase(auth()->user());
+                    
+                app()->setLocale($previousLocale);
             } else {
                 Notification::make(data_get($export, 'id'))
                     ->title(__('filament-excel::notifications.download_ready.title'))
