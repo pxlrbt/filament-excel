@@ -3,12 +3,8 @@
 namespace pxlrbt\FilamentExcel;
 
 use Filament\Facades\Filament;
-use Filament\Notifications\Actions\Action;
-use Filament\Notifications\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Commands\PruneExportsCommand;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
@@ -38,7 +34,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
 
     public function bootingPackage()
     {
-        Filament::serving($this->sendExportFinishedNotification(...));
+        Filament::serving(fn () => app(FilamentExport::class)->sendNotification());
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
             $schedule->command(PruneExportsCommand::class)->daily();
@@ -47,65 +43,13 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
         Event::listen(ExportFinishedEvent::class, [$this, 'cacheExportFinishedNotification']);
     }
 
-    public function sendExportFinishedNotification(): void
-    {
-        $exports = cache()->pull($this->getNotificationCacheKey(auth()->id()));
-
-        if (! filled($exports)) {
-            return;
-        }
-
-        foreach ($exports as $export) {
-            $url = URL::temporarySignedRoute(
-                'filament-excel-download',
-                now()->addHours(24),
-                ['path' => $export['filename']]
-            );
-
-            if (! Storage::disk('filament-excel')->exists($export['filename'])) {
-                continue;
-            }
-
-            if (Filament::getCurrentPanel()->hasDatabaseNotifications()) {
-                Notification::make(data_get($export, 'id'))
-                    ->title(__('filament-excel::notifications.download_ready.title'))
-                    ->body(__('filament-excel::notifications.download_ready.body'))
-                    ->success()
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->actions([
-                        Action::make('download')
-                            ->label(__('filament-excel::notifications.download_ready.download'))
-                            ->url($url, shouldOpenInNewTab: true)
-                            ->button()
-                            ->close(),
-                    ])
-                    ->sendToDatabase(auth()->user());
-            } else {
-                Notification::make(data_get($export, 'id'))
-                    ->title(__('filament-excel::notifications.download_ready.title'))
-                    ->body(__('filament-excel::notifications.download_ready.body'))
-                    ->success()
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->actions([
-                        Action::make('download')
-                            ->label(__('filament-excel::notifications.download_ready.download'))
-                            ->url($url, shouldOpenInNewTab: true)
-                            ->button()
-                            ->close(),
-                    ])
-                    ->persistent()
-                    ->send();
-            }
-        }
-    }
-
     public function cacheExportFinishedNotification(ExportFinishedEvent $event): void
     {
         if ($event->userId === null) {
             return;
         }
 
-        $key = $this->getNotificationCacheKey($event->userId);
+        $key = FilamentExport::getNotificationCacheKey($event->userId);
 
         $exports = cache()->pull($key, []);
         $exports[] = [
@@ -115,10 +59,5 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
         ];
 
         cache()->put($key, $exports);
-    }
-
-    protected function getNotificationCacheKey($userId): string
-    {
-        return 'filament-excel:exports:'.$userId;
     }
 }
