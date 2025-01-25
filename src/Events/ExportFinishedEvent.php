@@ -11,6 +11,7 @@ class ExportFinishedEvent
     public function __construct(
         public string $filename,
         public int|string|null $userId,
+        public string $locale,
     ) {
         //
     }

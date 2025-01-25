@@ -56,6 +56,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
             'id' => Str::uuid(),
             'filename' => $event->filename,
             'userId' => $event->userId,
+            'locale' => $event->locale,
         ];
 
         cache()->put($key, $exports);

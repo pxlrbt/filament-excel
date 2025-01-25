@@ -20,6 +20,12 @@ class FilamentExport
 
     protected function sendDatabaseNotification(array $export, string $url): void
     {
+        $previousLocale = app()->getLocale();
+
+        if (isset($export['locale'])) {
+            app()->setLocale($export['locale']);
+        }
+
         Notification::make(data_get($export, 'id'))
             ->title(__('filament-excel::notifications.download_ready.title'))
             ->body(__('filament-excel::notifications.download_ready.body'))
@@ -33,6 +39,8 @@ class FilamentExport
                     ->close(),
             ])
             ->sendToDatabase(auth()->user());
+
+        app()->setLocale($previousLocale);
     }
 
     protected function sendPersistentNotification(array $export, string $url): void
