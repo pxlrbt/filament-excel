@@ -411,6 +411,28 @@ class CustomExport extends ExcelExport
 }
 ```
 
+## File download URL customization
+
+By default, the package generates a signed URL with a default expiration time of 24 hours. 
+The URL contains the filename including the extension. Some WAF (Web Application Firewall) solutions can block the URL due to the fact that it links to a file, which contains parameters and can cause a false positive.
+
+```php
+// Somewhere in a ServiceProvider in the `boot()` method.
+use pxlrbt\FilamentExcel\FilamentExport;
+
+FilamentExport::createExportUrlUsing(function ($export) {
+    $fileInfo = pathinfo($export['filename']);
+    $filenameWithoutExtension = $fileInfo['filename'];
+    $extension = $fileInfo['extension'];
+
+    return URL::temporarySignedRoute(
+        'your-custom-route',
+        now()->addHours(2),
+        ['path' => $filenameWithoutExtension, 'extension' => $extension]
+    );
+});
+```
+
 ## Contributing
 
 If you want to contribute to this packages, you may want to test it in a real Filament project:
