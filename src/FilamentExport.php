@@ -62,11 +62,11 @@ class FilamentExport
         }
 
         foreach ($exports as $export) {
-            $url = $this->createUrl($export);
-
             if (! Storage::disk('filament-excel')->exists($export['filename'])) {
                 continue;
             }
+
+            $url = $this->createUrl($export);
 
             if (Filament::getCurrentPanel()->hasDatabaseNotifications()) {
                 $this->sendDatabaseNotification($export, $url);
@@ -83,14 +83,14 @@ class FilamentExport
 
     protected function createUrl(array $export): string
     {
-        if (is_null(static::$createExportUrlUsing)) {
-            return URL::temporarySignedRoute(
-                'filament-excel-download',
-                now()->addHours(24),
-                ['path' => $export['filename']]
-            );
+        if (static::$createExportUrlUsing !== null) {
+            return (static::$createExportUrlUsing)($export);
         }
 
-        return call_user_func(static::$createExportUrlUsing, $export);
+        return URL::temporarySignedRoute(
+            'filament-excel-download',
+            now()->addHours(24),
+            ['path' => $export['filename']]
+        );
     }
 }
