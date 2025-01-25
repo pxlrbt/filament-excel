@@ -21,7 +21,10 @@ class FilamentExport
     protected function sendDatabaseNotification(array $export, string $url): void
     {
         $previousLocale = app()->getLocale();
-        app()->setLocale($export['locale']);
+
+        if (isset($export['locale'])) {
+            app()->setLocale($export['locale']);
+        }
 
         Notification::make(data_get($export, 'id'))
             ->title(__('filament-excel::notifications.download_ready.title'))
