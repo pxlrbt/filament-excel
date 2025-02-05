@@ -27,7 +27,7 @@ trait WithFilename
 
     protected function ensureFilenameHasExtension(string $filename): string
     {
-        return Str::contains($filename, '.')
+        return Str::of($filename)->test('/\.\w{3,4}$/')
             ? $filename
             : $filename.'.'.$this->getDefaultExtension();
     }
