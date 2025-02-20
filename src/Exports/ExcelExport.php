@@ -189,7 +189,9 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             return $this->model;
         }
 
-        if (($resource = $this->getResourceClass()) !== null) {
+        if ($this->getLivewire()->getTable()->getRelationship() !== null) {
+            $model = get_class($this->getLivewire()->getTable()->getRelationship()->getRelated());
+        } elseif (($resource = $this->getResourceClass()) !== null) {
             $model = $resource::getModel();
         } elseif (($livewire = $this->getLivewire()) instanceof HasTable) {
             $model = $livewire->getTable()->getModel();
