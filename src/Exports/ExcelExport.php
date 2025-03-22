@@ -3,6 +3,7 @@
 namespace pxlrbt\FilamentExcel\Exports;
 
 use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
@@ -224,7 +225,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         $this->prepareQueuedExport();
 
         $filename = Str::uuid().'-'.$this->getFilename();
-        $userId = auth()->id();
+        $userId = Filament::auth()->id();
         $locale = app()->getLocale();
 
         $this

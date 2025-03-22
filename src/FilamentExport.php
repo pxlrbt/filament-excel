@@ -38,7 +38,7 @@ class FilamentExport
                     ->button()
                     ->close(),
             ])
-            ->sendToDatabase(auth()->user());
+            ->sendToDatabase(Filament::auth()->user());
 
         app()->setLocale($previousLocale);
     }
@@ -63,7 +63,7 @@ class FilamentExport
 
     public function sendNotification(): void
     {
-        $exports = cache()->pull(static::getNotificationCacheKey(auth()->id()));
+        $exports = cache()->pull(static::getNotificationCacheKey(Filament::auth()->id()));
 
         if (! filled($exports)) {
             return;
