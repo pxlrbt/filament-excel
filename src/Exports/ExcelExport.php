@@ -217,6 +217,8 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     {
         $this->resolveFilename();
         $this->resolveWriterType();
+        
+        $diskName = config('filament-excel.disk', 'filament-excel');
 
         if (! $this->isQueued()) {
             return $this->downloadExport($this->getFilename(), $this->getWriterType());
@@ -229,7 +231,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         $locale = app()->getLocale();
 
         $this
-            ->queueExport($filename, 'filament-excel', $this->getWriterType())
+            ->queueExport($filename, $diskName, $this->getWriterType())
             ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId, $locale)]);
 
         Notification::make()

@@ -68,9 +68,11 @@ class FilamentExport
         if (! filled($exports)) {
             return;
         }
+        
+        $diskName = config('filament-excel.disk', 'filament-excel');
 
         foreach ($exports as $export) {
-            if (! Storage::disk('filament-excel')->exists($export['filename'])) {
+            if (! Storage::disk($diskName)->exists($export['filename'])) {
                 continue;
             }
 
@@ -95,9 +97,11 @@ class FilamentExport
             return (static::$createExportUrlUsing)($export);
         }
 
+        $expirationHours = (int)config('filament-excel.temporary_url_expiration', 24 * 60) / 60;
+        
         return URL::temporarySignedRoute(
             'filament-excel-download',
-            now()->addHours(24),
+            now()->addHours($expirationHours),
             ['path' => $export['filename']]
         );
     }

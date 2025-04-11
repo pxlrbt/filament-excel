@@ -15,11 +15,34 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
 {
     public function register(): void
     {
-        config()->set('filesystems.disks.filament-excel', [
-            'driver' => 'local',
-            'root' => storage_path('app/filament-excel'),
-            'url' => config('app.url').'/filament-excel',
-        ]);
+        // Publish and merge configuration
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/filament-excel.php', 'filament-excel'
+        );
+
+        // Get disk settings from config or use defaults
+        $diskName = config('filament-excel.disk', 'filament-excel');
+        $diskDriver = config('filament-excel.disk_driver', 'local');
+        $diskConfig = [];
+
+        // If using local disk, set default local disk config
+        if ($diskDriver === 'local') {
+            $diskConfig = [
+                'driver' => 'local',
+                'root' => storage_path('app/filament-excel'),
+                'url' => config('app.url').'/filament-excel',
+            ];
+        }
+        // If using S3, inherit the S3 configuration from the existing s3 disk
+        elseif ($diskDriver === 's3' && config()->has('filesystems.disks.s3')) {
+            $s3Config = config('filesystems.disks.s3');
+            $diskConfig = array_merge($s3Config, [
+                'root' => config('filament-excel.s3_path', 'filament-excel'),
+            ]);
+        }
+
+        // Set the disk configuration
+        config()->set("filesystems.disks.{$diskName}", $diskConfig);
 
         parent::register();
     }
@@ -27,6 +50,7 @@ class FilamentExcelServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package->name('filament-excel')
+            ->hasConfigFile()
             ->hasCommands([PruneExportsCommand::class])
             ->hasRoutes(['web'])
             ->hasTranslations();

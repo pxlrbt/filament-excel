@@ -14,11 +14,16 @@ class PruneExportsCommand extends Command
 
     public function handle()
     {
-        collect(Storage::disk('filament-excel')->listContents('', false))
-            ->each(function (FileAttributes $file) {
+        $diskName = config('filament-excel.disk', 'filament-excel');
+        $s3Path = config('filament-excel.s3_path', '');
+        
+        collect(Storage::disk($diskName)->listContents($s3Path, false))
+            ->each(function (FileAttributes $file) use ($diskName) {
                 if ($file->type() === 'file' && $file->lastModified() < now()->subDay()->getTimestamp()) {
-                    Storage::disk('filament-excel')->delete($file->path());
+                    Storage::disk($diskName)->delete($file->path());
                 }
             });
+            
+        $this->info("Successfully pruned old exports from '{$diskName}' disk.");
     }
 }
