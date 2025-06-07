@@ -5,8 +5,8 @@ namespace pxlrbt\FilamentExcel\Exports\Concerns;
 use Closure;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Form;
 use Filament\Resources\Table;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Schema\Builder;
@@ -98,7 +98,7 @@ trait WithColumns
 
     protected function createFieldMappingFromForm(): Collection
     {
-        $form = $this->getResourceClass()::form(new Form($this->getLivewire()));
+        $form = $this->getResourceClass()::form(new Schema($this->getLivewire()));
         $components = collect($form->getComponents());
         $extracted = collect();
 

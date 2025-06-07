@@ -29,14 +29,19 @@ Easily configure your Excel exports in Filament via a bulk or page action.
 Install via Composer. This will download the package and [Laravel Excel](https://laravel-excel.com/).
 
 | Plugin Version | Filament Version | PHP Version |
-|----------------|-----------------|-------------|
-| 1.x            | 2.x   | \> 8.0      |
-| 2.x            | 3.x             | \> 8.1      |
-
+|----------------|------------------|-------------|
+| 1.x            | 2.x              | \> 8.0      |
+| 2.x            | 3.x              | \> 8.1      |
+| 3.x            | 4.x              | \> 8.1      |
 
 ```bash
 composer require pxlrbt/filament-excel
 ```
+
+### Upgrading to Filament v4
+
+- `composer require pxlrbt/filament-excel:3.0`
+- The Action classes were simplified into a single `ExportBulkAction` and `ExportAction` for pages and tables
 
 ### Laravel > 9
 
