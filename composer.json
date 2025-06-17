@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "filament/filament": "^3.0|^4.0",
+        "filament/filament": "^4.0",
         "maatwebsite/excel": "^3.1",
         "anourvalar/eloquent-serialize": "^1.2"
     },
