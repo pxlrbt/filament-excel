@@ -4,8 +4,8 @@ namespace pxlrbt\FilamentExcel\Actions\Concerns;
 
 use Closure;
 use Exception;
-use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Group;
 use Illuminate\Support\Collection;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
@@ -23,7 +23,7 @@ trait ExportableAction
         $this->icon('heroicon-o-arrow-down-tray');
         $this->action(Closure::fromCallable([$this, 'handleExport']));
 
-        $this->form(function () {
+        $this->schema(function () {
             if ($this->exports->count() > 1 || $this->getExportFormSchemas()->count() > 0) {
                 return [
                     ...$this->getSelectExportField(),
@@ -44,7 +44,7 @@ trait ExportableAction
                 ->label(__('Export template'))
                 ->reactive()
                 ->default(0)
-                ->disablePlaceholderSelection()
+                ->selectablePlaceholder(false)
                 ->hidden($this->exports->count() <= 1)
                 ->options($this->exports->map(
                     fn ($export) => $export->getLabel()
