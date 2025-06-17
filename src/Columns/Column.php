@@ -99,6 +99,7 @@ class Column
         }
 
         // Reset other properties
+        $clone->layout(null);
         $clone->table(null);
         $clone->getStateUsing(null);
         invade($clone)->summarizers = [];
