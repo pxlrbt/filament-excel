@@ -19,6 +19,8 @@ use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanIgnoreFormatting;
@@ -26,18 +28,20 @@ use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanQueue;
 use pxlrbt\FilamentExcel\Exports\Concerns\Except;
 use pxlrbt\FilamentExcel\Exports\Concerns\Only;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithAppendedSheets;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithChunkSize;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumnFormats;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumns;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithFilename;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithHeadings;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithMapping;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithPrependedSheets;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
-class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents, WithMultipleSheets, WithTitle 
 {
     use AskForFilename;
     use AskForWriterType;
@@ -53,12 +57,14 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     }
     use Except;
     use Only;
+    use WithAppendedSheets;
     use WithChunkSize;
     use WithColumnFormats;
     use WithColumns;
     use WithFilename;
     use WithHeadings;
     use WithMapping;
+    use WithPrependedSheets;
     use WithWidths;
     use WithWriterType;
 
@@ -109,9 +115,36 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         //
     }
 
+    /**
+     * @return array
+     */
+    public function sheets(): array
+    {
+        $sheets = [];
+
+        $prependedSheets = $this->getPrependedSheets();
+        if (!empty($prependedSheets)) {
+            $sheets = array_merge($sheets, $prependedSheets);
+        }
+
+        $sheets[] = $this;
+
+        $appendedSheets = $this->getAppendedSheets();
+        if (!empty($appendedSheets)) {
+            $sheets = array_merge($sheets, $appendedSheets);
+        }
+
+        return $sheets;
+    }
+
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function title(): string
+    {
+        return $this->getLabel();
     }
 
     public function label(string $label): static

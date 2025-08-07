@@ -411,6 +411,25 @@ class CustomExport extends ExcelExport
 }
 ```
 
+## Multiple sheets
+
+By default, the package will only generate the sheet containing the data. However, it is possible to add additional custom sheets before and after the data sheet. 
+
+```php
+ExportBulkAction::make()->exports([
+    ExcelExport::make('user_export')->fromTable()
+        ->withPrependedSheets([
+            new CoverSheet(),
+        ])
+        ->withAppendedSheets([
+            new AppendixSheet(),
+        ])
+])
+```
+
+The classes that are passed to `->withPrependedSheets()` and `->withAppendedSheets()` should be sheet classes as detailed [here](https://docs.laravel-excel.com/3.1/exports/multiple-sheets.html#sheet-classes)
+
+
 ## File download URL customization
 
 By default, the package generates a signed URL with a default expiration time of 24 hours. 
