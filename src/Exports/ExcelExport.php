@@ -28,14 +28,13 @@ use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanQueue;
 use pxlrbt\FilamentExcel\Exports\Concerns\Except;
 use pxlrbt\FilamentExcel\Exports\Concerns\Only;
-use pxlrbt\FilamentExcel\Exports\Concerns\WithAppendedSheets;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithChunkSize;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumnFormats;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumns;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithFilename;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithHeadings;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithMapping;
-use pxlrbt\FilamentExcel\Exports\Concerns\WithPrependedSheets;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithSheets;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
@@ -57,14 +56,13 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     }
     use Except;
     use Only;
-    use WithAppendedSheets;
     use WithChunkSize;
     use WithColumnFormats;
     use WithColumns;
     use WithFilename;
     use WithHeadings;
     use WithMapping;
-    use WithPrependedSheets;
+    use WithSheets;
     use WithWidths;
     use WithWriterType;
 
@@ -127,7 +125,12 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             $sheets = array_merge($sheets, $prependedSheets);
         }
 
-        $sheets[] = $this;
+        $overriddenSheets = $this->getSheets();
+        if (!empty($overriddenSheets)) {
+            $sheets = array_merge($sheets, $overriddenSheets);
+        } else {
+            $sheets[] = $this;
+        }
 
         $appendedSheets = $this->getAppendedSheets();
         if (!empty($appendedSheets)) {

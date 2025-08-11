@@ -418,16 +418,23 @@ By default, the package will only generate the sheet containing the data. Howeve
 ```php
 ExportBulkAction::make()->exports([
     ExcelExport::make('user_export')->fromTable()
-        ->withPrependedSheets([
-            new CoverSheet(),
-        ])
-        ->withAppendedSheets([
-            new AppendixSheet(),
-        ])
+        ->withSheets(
+            sheets: [
+                new OverriddenDataSheet(),
+            ],
+            prepend: [
+                new CoverSheet(),
+            ],
+            append: [
+                new AppendixSheet(),
+            ]
+        )
 ])
 ```
 
-The classes that are passed to `->withPrependedSheets()` and `->withAppendedSheets()` should be sheet classes as detailed [here](https://docs.laravel-excel.com/3.1/exports/multiple-sheets.html#sheet-classes)
+The array of classes that are passed to `->withSheets()` should be sheet classes as detailed [here](https://docs.laravel-excel.com/3.1/exports/multiple-sheets.html#sheet-classes)
+
+It is also possible to pass an array of sheet classes to `->withSheets(sheets: array)` which will override the default data sheet.
 
 
 ## File download URL customization
