@@ -3,14 +3,21 @@
 namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
 use Closure;
+use Illuminate\Support\Arr;
 
 trait WithSheets
 {
     protected array|Closure|null $prependedSheets = null;
+
     protected array|Closure|null $appendedSheets = null;
+
     protected array|Closure|null $sheets = null;
 
-    public function withSheets(array|Closure|null $sheets = null, array|Closure $prepend = [], array|Closure $append = []): static
+    public function withSheets(
+        array|Closure|null $sheets = null,
+        array|Closure $prepend = [],
+        array|Closure $append = []
+    ): static
     {
         $this->sheets = $sheets;
         $this->prependedSheets = $prepend;
@@ -19,21 +26,12 @@ trait WithSheets
         return $this;
     }
 
-    protected function getSheets(): array
+    public function sheets(): array
     {
-        $sheets = $this->evaluate($this->sheets) ?? [];
-        return is_array($sheets) ? $sheets : [$sheets];
-    }
-
-    protected function getPrependedSheets(): array
-    {
-        $prependedSheets = $this->evaluate($this->prependedSheets) ?? [];
-        return is_array($prependedSheets) ? $prependedSheets : [$prependedSheets];
-    }
-
-    protected function getAppendedSheets(): array
-    {
-        $appendedSheets = $this->evaluate($this->appendedSheets) ?? [];
-        return is_array($appendedSheets) ? $appendedSheets : [$appendedSheets];
+        return [
+            ...Arr::wrap($this->evaluate($this->prependedSheets) ?? []),
+            ...Arr::wrap($this->evaluate($this->sheets) ?? [$this]),
+            ...Arr::wrap($this->evaluate($this->appendedSheets) ?? []),
+        ];
     }
 }

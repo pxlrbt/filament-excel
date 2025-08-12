@@ -40,7 +40,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
-class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents, WithMultipleSheets, WithTitle 
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents, WithMultipleSheets, WithTitle
 {
     use AskForFilename;
     use AskForWriterType;
@@ -111,33 +111,6 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     public function setUp()
     {
         //
-    }
-
-    /**
-     * @return array
-     */
-    public function sheets(): array
-    {
-        $sheets = [];
-
-        $prependedSheets = $this->getPrependedSheets();
-        if (!empty($prependedSheets)) {
-            $sheets = array_merge($sheets, $prependedSheets);
-        }
-
-        $overriddenSheets = $this->getSheets();
-        if (!empty($overriddenSheets)) {
-            $sheets = array_merge($sheets, $overriddenSheets);
-        } else {
-            $sheets[] = $this;
-        }
-
-        $appendedSheets = $this->getAppendedSheets();
-        if (!empty($appendedSheets)) {
-            $sheets = array_merge($sheets, $appendedSheets);
-        }
-
-        return $sheets;
     }
 
     public function getName(): string
