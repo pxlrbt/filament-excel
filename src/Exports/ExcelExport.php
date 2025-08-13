@@ -19,6 +19,8 @@ use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanIgnoreFormatting;
@@ -32,12 +34,13 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithColumns;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithFilename;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithHeadings;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithMapping;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithSheets;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 
-class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents, WithMultipleSheets, WithTitle
 {
     use AskForFilename;
     use AskForWriterType;
@@ -59,6 +62,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     use WithFilename;
     use WithHeadings;
     use WithMapping;
+    use WithSheets;
     use WithWidths;
     use WithWriterType;
 
@@ -112,6 +116,11 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function title(): string
+    {
+        return $this->getLabel();
     }
 
     public function label(string $label): static
