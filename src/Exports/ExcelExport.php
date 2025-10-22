@@ -24,6 +24,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use pxlrbt\FilamentExcel\Events\ExportFinishedEvent;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanIgnoreFormatting;
+use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyModel;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanModifyQuery;
 use pxlrbt\FilamentExcel\Exports\Concerns\CanQueue;
 use pxlrbt\FilamentExcel\Exports\Concerns\Except;
@@ -45,6 +46,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     use AskForFilename;
     use AskForWriterType;
     use CanIgnoreFormatting;
+    use CanModifyModel;
     use CanModifyQuery;
     use CanQueue, Exportable  {
         Exportable::download as downloadExport;
