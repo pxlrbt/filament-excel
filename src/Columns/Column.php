@@ -46,7 +46,7 @@ class Column
         //
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -58,7 +58,7 @@ class Column
         return $this;
     }
 
-    public function getHeading()
+    public function getHeading(): string|Closure
     {
         return $this->heading ?? Str::headline($this->name);
     }
@@ -70,7 +70,7 @@ class Column
         return $this;
     }
 
-    public function getWidth()
+    public function getWidth(): int|Closure|null
     {
         return $this->width;
     }
@@ -86,29 +86,45 @@ class Column
     {
         $clone = clone $tableColumn;
 
-        // Try to remove all closures
-        foreach ((new ReflectionClass($clone))->getProperties() as $property) {
+        // Remove all closures from cloned TableColumn for queue serialization
+        $properties = (new ReflectionClass($clone))->getProperties();
+        foreach ($properties as $property) {
             $property->setAccessible(true);
-            $type = (string) $property->getType();
-
-            if (strpos($type, 'Closure') !== false) {
-                if (strpos($type, 'null') !== false || strpos($type, '?') !== false) {
-                    $property->setValue($clone, null);
-                }
+            try {
+                $value = $property->getValue($clone);
+                $property->setValue($clone, $this->removeClosuresFromValue($value));
+            } catch (\Throwable $e) {
+                // Skip properties that can't be accessed or modified
             }
         }
-
-        // Reset other properties
+        // Reset properties that reference non-serializable objects
         $clone->layout(null);
-        $clone->getStateUsing(null);
-        invade($clone)->summarizers = [];
+        $clone->table(null);
+        $clone->summarize([]);
 
         $this->tableColumn = $clone;
 
         return $this;
     }
 
-    public function getFormat()
+    /**
+     * Recursively remove closures from an value.
+     */
+    protected function removeClosuresFromValue(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(fn ($value) => $this->removeClosuresFromValue($value), $value);
+        }
+
+        if ($value instanceof Closure) {
+            return null;
+        }
+
+        return $value;
+
+    }
+
+    public function getFormat(): string|Closure|null
     {
         return $this->format;
     }
