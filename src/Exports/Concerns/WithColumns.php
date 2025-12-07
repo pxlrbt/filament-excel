@@ -6,6 +6,7 @@ use Closure;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
 use Filament\Resources\Table;
+use Filament\Schemas\Components\Form;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
@@ -98,36 +99,58 @@ trait WithColumns
 
     protected function createFieldMappingFromForm(): Collection
     {
+        /**
+         * @var Form $form
+         */
         $form = $this->getResourceClass()::form(new Schema($this->getLivewire()));
+        $form->model($this->getModelInstance());
+
         $components = collect($form->getComponents());
         $extracted = collect();
 
-        while (($component = $components->shift()) !== null) {
-            $children = $component->getChildComponents();
+        $extractComponents = function ($components, $parentPath = '') use (&$extractComponents, &$extracted) {
+            foreach ($components as $component) {
+                $children = $component->getChildComponents();
 
-            if (
-                $component instanceof Repeater
-                || $component instanceof Builder
-            ) {
-                $extracted->push($component);
+                if (
+                    $component instanceof Repeater
+                    || $component instanceof Builder
+                ) {
+                    continue;
+                }
 
-                continue;
+                if (count($children) > 0) {
+                    $relationshipName = method_exists($component, 'getRelationshipName')
+                        ? $component->getRelationshipName()
+                        : null;
+
+                    $newPath = $relationshipName
+                        ? ($parentPath ? $parentPath . '.' . $relationshipName : $relationshipName)
+                        : $parentPath;
+
+                    $extractComponents($children, $newPath);
+
+                    continue;
+                }
+
+                if ($component instanceof Field) {
+                    $fieldName = $component->getName();
+                    $fullPath = $parentPath ? $parentPath . '.' . $fieldName : $fieldName;
+
+                    $extracted->put($fullPath, [
+                        'field' => $component,
+                        'path' => $fullPath,
+                    ]);
+                }
             }
+        };
 
-            if (count($children) > 0) {
-                $components = $components->merge($children);
-
-                continue;
-            }
-
-            $extracted->push($component);
-        }
+        $extractComponents($components);
 
         return $extracted
-            ->filter(fn ($field) => $field instanceof Field)
-            ->mapWithKeys(fn (Field $field) => [
-                $field->getName() => Column::make($field->getName())
-                    ->heading($field->getLabel()),
+            ->mapWithKeys(fn ($data) => [
+                $data['path'] => Column::make($data['path'])
+                    ->heading($data['field']->getLabel()),
             ]);
     }
 
