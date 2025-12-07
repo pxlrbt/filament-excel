@@ -17,8 +17,7 @@ trait WithSheets
         array|Closure|null $sheets = null,
         array|Closure $prepend = [],
         array|Closure $append = []
-    ): static
-    {
+    ): static {
         $this->sheets = $sheets;
         $this->prependedSheets = $prepend;
         $this->appendedSheets = $append;
