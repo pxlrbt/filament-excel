@@ -125,7 +125,7 @@ trait WithColumns
                         : null;
 
                     $newPath = $relationshipName
-                        ? ($parentPath ? $parentPath . '.' . $relationshipName : $relationshipName)
+                        ? ($parentPath ? $parentPath.'.'.$relationshipName : $relationshipName)
                         : $parentPath;
 
                     $extractComponents($children, $newPath);
@@ -135,7 +135,7 @@ trait WithColumns
 
                 if ($component instanceof Field) {
                     $fieldName = $component->getName();
-                    $fullPath = $parentPath ? $parentPath . '.' . $fieldName : $fieldName;
+                    $fullPath = $parentPath ? $parentPath.'.'.$fieldName : $fieldName;
 
                     $extracted->put($fullPath, [
                         'field' => $component,

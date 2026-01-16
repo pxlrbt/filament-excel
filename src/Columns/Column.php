@@ -8,6 +8,7 @@ use Filament\Tables\Columns\Column as TableColumn;
 use Illuminate\Support\Str;
 use Laravel\SerializableClosure\SerializableClosure;
 use ReflectionClass;
+use Throwable;
 
 class Column
 {
@@ -93,12 +94,13 @@ class Column
             try {
                 $value = $property->getValue($clone);
                 $property->setValue($clone, $this->removeClosuresFromValue($value));
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Skip properties that can't be accessed or modified
             }
         }
         // Reset properties that reference non-serializable objects
         $clone->layout(null);
+        $clone->action(null);
         $clone->table(null);
         $clone->summarize([]);
 

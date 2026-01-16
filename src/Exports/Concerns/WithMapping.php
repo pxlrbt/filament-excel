@@ -85,6 +85,10 @@ trait WithMapping
                 $arrayState;
         }
 
+        if (is_bool($arrayState)) {
+            return (int) $arrayState;
+        }
+
         return $arrayState;
     }
 
