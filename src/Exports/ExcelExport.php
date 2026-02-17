@@ -244,9 +244,17 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         $userId = Filament::auth()->id();
         $locale = app()->getLocale();
 
-        $this
+        $pendingDispatch = $this
             ->queueExport($filename, 'filament-excel', $this->getWriterType())
             ->chain([fn () => ExportFinishedEvent::dispatch($filename, $userId, $locale)]);
+
+        if ($this->getQueueName()) {
+            $pendingDispatch->allOnQueue($this->getQueueName());
+        }
+
+        if ($this->getQueueConnection()) {
+            $pendingDispatch->allOnConnection($this->getQueueConnection());
+        }
 
         Notification::make()
             ->title(__('filament-excel::notifications.queued.title'))

@@ -392,6 +392,13 @@ ExportAction::make()->exports([
 ])
 ```
 
+You can specify a custom queue name and connection:
+
+```php
+ExcelExport::make()->queue(queue: 'exports')
+ExcelExport::make()->queue(queue: 'exports', connection: 'redis')
+```
+
 
 ## Custom exports
 
