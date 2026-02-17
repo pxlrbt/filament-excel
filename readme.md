@@ -323,6 +323,40 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 
+### Styling
+
+To apply custom styles (bold headers, alignment, font sizes, etc.) to your export, create a custom export class that implements the `WithStyles` interface from Laravel Excel:
+
+```php
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+class CustomExport extends ExcelExport implements WithStyles
+{
+    public function setUp()
+    {
+        $this->withFilename('custom_export');
+        $this->withColumns([
+            Column::make('name'),
+            Column::make('email'),
+        ]);
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1    => ['font' => ['bold' => true]],          // Style the first row (headings) as bold
+            'B2' => ['font' => ['italic' => true]],        // Style a specific cell
+            'C'  => ['font' => ['size' => 16]],            // Style an entire column
+        ];
+    }
+}
+```
+
+For all available styling options, refer to the [Laravel Excel Styling documentation](https://docs.laravel-excel.com/3.1/exports/column-formatting.html#styling).
+
 ### User input
 
 You can let the user pick a filename and writer type by using `->askForFilename()` and `->askForWriterType()`:
