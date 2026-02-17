@@ -174,7 +174,7 @@ trait WithColumns
                 'currency' => $invadedColumn->getTable()->getDefaultCurrency(),
                 'locale' => $invadedColumn->getTable()->getDefaultNumberLocale() ?? config('app.locale'),
                 'format' => $invadedColumn->isDate()
-                    ? $invadedColumn->getTable()->getDefaultTimeDisplayFormat()
+                    ? $invadedColumn->getTable()->getDefaultDateDisplayFormat()
                     : $invadedColumn->getTable()->getDefaultTimeDisplayFormat(),
                 default => $value,
             };
