@@ -3,6 +3,7 @@
 namespace pxlrbt\FilamentExcel\Exports\Concerns;
 
 use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
+use pxlrbt\FilamentExcel\Dev\FindClosures;
 
 trait CanQueue
 {
@@ -46,5 +47,9 @@ trait CanQueue
 
         $this->livewire = null;
         $this->query = EloquentSerializeFacade::serialize($this->query());
+
+        // Debug Closured
+        // $closures = (new FindClosures)($this);
+        // dd($closures);
     }
 }
