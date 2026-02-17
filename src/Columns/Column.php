@@ -102,7 +102,11 @@ class Column
         $clone->layout(null);
         $clone->action(null);
         $clone->table(null);
-        $clone->summarize([]);
+
+        $ref = new \ReflectionProperty($clone, 'summarizers');
+        $ref->setAccessible(true);
+        $ref->setValue($clone, []);
+
 
         $this->tableColumn = $clone;
 
