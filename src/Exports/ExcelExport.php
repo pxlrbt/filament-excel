@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithCustomChunkSize;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings as HasHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping as HasMapping;
@@ -33,6 +34,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\Only;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithChunkSize;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumnFormats;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithColumns;
+use pxlrbt\FilamentExcel\Exports\Concerns\WithCsvSettings;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithFilename;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithHeadings;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithMapping;
@@ -43,7 +45,7 @@ use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
 use pxlrbt\FilamentExcel\Jobs\Middleware\SetAuthenticatedUser;
 
-class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents, WithMultipleSheets, WithTitle
+class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithCustomCsvSettings, WithEvents, WithMultipleSheets, WithTitle
 {
     use AskForFilename;
     use AskForWriterType;
@@ -63,6 +65,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     use WithChunkSize;
     use WithColumnFormats;
     use WithColumns;
+    use WithCsvSettings;
     use WithFilename;
     use WithHeadings;
     use WithMapping;

@@ -35,6 +35,7 @@ trait CanQueue
         $this->writerType = $this->getWriterType();
         $this->columnFormats = $this->getColumnFormats();
         $this->columnWidths = $this->getColumnWidths();
+        $this->csvSettings = $this->getCsvSettings();
         $this->livewireClass = $this->getLivewireClass();
 
         // Reset
