@@ -9,9 +9,15 @@ trait CanQueue
 {
     protected bool $isQueued = false;
 
-    public function queue(): static
+    protected ?string $queueName = null;
+
+    protected ?string $queueConnection = null;
+
+    public function queue(?string $queue = null, ?string $connection = null): static
     {
         $this->isQueued = true;
+        $this->queueName = $queue;
+        $this->queueConnection = $connection;
 
         return $this;
     }
@@ -19,6 +25,16 @@ trait CanQueue
     protected function isQueued()
     {
         return $this->isQueued;
+    }
+
+    public function getQueueName(): ?string
+    {
+        return $this->queueName;
+    }
+
+    public function getQueueConnection(): ?string
+    {
+        return $this->queueConnection;
     }
 
     protected function prepareQueuedExport()
