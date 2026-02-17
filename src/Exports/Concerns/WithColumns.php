@@ -14,6 +14,8 @@ use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
 use pxlrbt\FilamentExcel\Columns\Column;
 
+use ReflectionFunction;
+
 use function Livewire\invade;
 
 trait WithColumns
@@ -154,6 +156,40 @@ trait WithColumns
             ]);
     }
 
+    protected function rebindFormatStateUsingForClosuresWithFallback($invadedColumn)
+    {
+        if ($invadedColumn->formatStateUsing === null) {
+            return;
+        }
+
+        $reflect = new ReflectionFunction($invadedColumn->formatStateUsing);
+        $vars = $reflect->getClosureUsedVariables();
+
+        foreach ($vars as $name => $value) {
+            if (! is_null($value)) {
+                continue;
+            }
+
+            $vars[$name] = match ($name) {
+                'currency' => $invadedColumn->getTable()->getDefaultCurrency(),
+                'locale' => $invadedColumn->getTable()->getDefaultNumberLocale() ?? config('app.locale'),
+                'format' => $invadedColumn->isDate()
+                    ? $invadedColumn->getTable()->getDefaultTimeDisplayFormat()
+                    : $invadedColumn->getTable()->getDefaultTimeDisplayFormat(),
+                default => $value,
+            };
+        }
+
+        match (true) {
+            $invadedColumn->isMoney() => $invadedColumn->money(...$vars),
+            $invadedColumn->isNumeric() => $invadedColumn->numeric(...$vars),
+            $invadedColumn->isDate() => $invadedColumn->date(...$vars),
+            $invadedColumn->isTime() => $invadedColumn->time(...$vars),
+
+            default => null,
+        };
+    }
+
     protected function createFieldMappingFromTable(): Collection
     {
         $livewire = $this->getLivewire();
@@ -177,6 +213,8 @@ trait WithColumns
 
                 // Invade for protected properties
                 $invadedColumn = invade($clonedCol);
+
+                $this->rebindFormatStateUsingForClosuresWithFallback($invadedColumn);
 
                 $exportColumn = Column::make($column->getName())
                     ->heading($column->getLabel())
