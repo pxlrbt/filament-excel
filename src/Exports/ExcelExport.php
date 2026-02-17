@@ -8,6 +8,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -40,6 +41,7 @@ use pxlrbt\FilamentExcel\Exports\Concerns\WithWidths;
 use pxlrbt\FilamentExcel\Exports\Concerns\WithWriterType;
 use pxlrbt\FilamentExcel\Interactions\AskForFilename;
 use pxlrbt\FilamentExcel\Interactions\AskForWriterType;
+use pxlrbt\FilamentExcel\Jobs\Middleware\SetAuthenticatedUser;
 
 class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithCustomChunkSize, WithEvents, WithMultipleSheets, WithTitle
 {
@@ -235,6 +237,9 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
 
         $this->prepareQueuedExport();
 
+        Context::add('filament_excel_user_id', Filament::auth()->id());
+        Context::add('filament_excel_auth_guard', Filament::getAuthGuard());
+
         $filename = Str::uuid().'-'.$this->getFilename();
         $userId = Filament::auth()->id();
         $locale = app()->getLocale();
@@ -332,6 +337,13 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         }
 
         return [];
+    }
+
+    public function middleware(): array
+    {
+        return [
+            new SetAuthenticatedUser,
+        ];
     }
 
     public function rtl(bool $isRtl = true): static
