@@ -172,6 +172,39 @@ ExportAction::make()->exports([
 ```
 
 
+### CSV settings
+
+When exporting as CSV, you can customize the CSV output via `->withCsvSettings()` using the `CsvSettings` DTO. Any setting left as `null` will use the Laravel Excel config defaults.
+
+```php
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Exports\CsvSettings;
+use Maatwebsite\Excel\Excel;
+
+ExportAction::make()->exports([
+    ExcelExport::make()
+        ->withWriterType(Excel::CSV)
+        ->withCsvSettings(new CsvSettings(
+            delimiter: ';',
+            useBom: true,
+        )),
+])
+```
+
+You can also pass a Closure for dynamic configuration:
+
+```php
+ExcelExport::make()
+    ->withWriterType(Excel::CSV)
+    ->withCsvSettings(fn () => new CsvSettings(
+        delimiter: '\t',
+        outputEncoding: 'ISO-8859-1',
+    ))
+```
+
+Available settings: `delimiter`, `enclosure`, `lineEnding`, `useBom`, `includeSeparatorLine`, `excelCompatibility`, `outputEncoding`.
+
 ### Defining columns
 
 When using `->fromForm()`/`->fromTable()`/`->fromModel()` the columns are resolved from your table or form definition. You can also provide columns manually, append columns or overwrite generated columns.
