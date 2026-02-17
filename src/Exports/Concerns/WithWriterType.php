@@ -34,6 +34,17 @@ trait WithWriterType
 
     protected function getDefaultExtension(): string
     {
-        return $this->getWriterType() ? strtolower($this->getWriterType()) : 'xlsx';
+        return match ($this->getWriterType()) {
+            Excel::XLSX => 'xlsx',
+            Excel::CSV, Excel::TSV => 'csv',
+            Excel::ODS => 'ods',
+            Excel::XLS => 'xls',
+            Excel::SLK => 'slk',
+            Excel::XML => 'xml',
+            Excel::GNUMERIC => 'gnumeric',
+            Excel::HTML => 'html',
+            Excel::MPDF, Excel::DOMPDF, Excel::TCPDF => 'pdf',
+            default => 'xlsx',
+        };
     }
 }
