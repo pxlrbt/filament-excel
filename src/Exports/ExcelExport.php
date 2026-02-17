@@ -205,17 +205,25 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
             return $this->model;
         }
 
-        $table = $this->getLivewire()->getTable();
+        $livewire = $this->getLivewire();
 
-        if (($relationship = $table->getRelationship()) !== null) {
-            $model = get_class($relationship->getRelated());
-        } elseif (($resource = $this->getResourceClass()) !== null) {
-            $model = $resource::getModel();
-        } else {
-            $model = $table->getModel();
+        if (method_exists($livewire, 'getTable')) {
+            $table = $livewire->getTable();
+
+            if (($relationship = $table->getRelationship()) !== null) {
+                $model = get_class($relationship->getRelated());
+            } elseif (($resource = $this->getResourceClass()) !== null) {
+                $model = $resource::getModel();
+            } else {
+                $model = $table->getModel();
+            }
+
+            return $this->model ??= $model;
         }
 
-        return $this->model ??= $model;
+        $record = $this->getLivewire()->getRecord();
+
+        return $this->model ??= $record::class;
     }
 
     public function hydrate($livewire = null, $records = null, $formData = null): static
