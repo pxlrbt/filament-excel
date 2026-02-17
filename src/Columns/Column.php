@@ -107,7 +107,6 @@ class Column
         $ref->setAccessible(true);
         $ref->setValue($clone, []);
 
-
         $this->tableColumn = $clone;
 
         return $this;
