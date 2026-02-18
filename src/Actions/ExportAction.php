@@ -3,6 +3,7 @@
 namespace pxlrbt\FilamentExcel\Actions;
 
 use Filament\Actions\Action;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use pxlrbt\FilamentExcel\Actions\Concerns\ExportableAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
@@ -36,7 +37,7 @@ class ExportAction extends Action
 
         return app()->call([$exportable, 'hydrate'], [
             'livewire' => $this->getLivewire(),
-            'records' => property_exists($livewire, 'record') ? collect([$livewire->record]) : null,
+            'records' => (property_exists($livewire, 'record') && ! $livewire instanceof ManageRelatedRecords) ? collect([$livewire->record]) : null,
             'formData' => data_get($data, $exportable->getName()),
         ])->export();
     }
