@@ -5,6 +5,7 @@ namespace pxlrbt\FilamentExcel\Exports;
 use AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Database\Eloquent\Model;
@@ -158,6 +159,8 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         if ($this->livewire instanceof RelationManager) {
             $this->livewire->pageClass = $this->livewireClass;
             $this->livewire->ownerRecord = $this->livewireOwnerRecord;
+        } elseif ($this->livewire instanceof ManageRelatedRecords && $this->livewireOwnerRecord) {
+            $this->livewire->record = $this->livewireOwnerRecord;
         }
 
         if ($this->isQueued) {
