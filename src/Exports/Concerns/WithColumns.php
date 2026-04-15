@@ -23,6 +23,8 @@ trait WithColumns
 
     public Closure|array $generatedColumns = [];
 
+    protected bool $withoueGeneratedColumns = false;
+
     protected ?Collection $cachedMap = null;
 
     protected ?string $columnsSource = null;
@@ -42,9 +44,18 @@ trait WithColumns
         return $this;
     }
 
+    public function withoutGeneratedColumns(Closure|bool $condition = true): static
+    {
+        $this->withoueGeneratedColumns = $condition;
+
+        return $this;
+    }
+
     public function getColumns(): array
     {
-        $columns = $this->evaluate($this->generatedColumns);
+        $columns = ! $this->evaluate($this->withoueGeneratedColumns)
+            ? $this->evaluate($this->generatedColumns)
+            : [];
 
         foreach ($this->evaluate($this->columns) as $column) {
             if ($this->columnsSource === 'table' && array_key_exists($column->getName(), $columns)) {

@@ -209,6 +209,8 @@ Available settings: `delimiter`, `enclosure`, `lineEnding`, `useBom`, `includeSe
 
 When using `->fromForm()`/`->fromTable()`/`->fromModel()` the columns are resolved from your table or form definition. You can also provide columns manually, append columns or overwrite generated columns.
 
+If you want to fully control which columns are exported and ignore all auto-generated columns, you can use `->withoutGeneratedColumns()`:
+
 ```php
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
