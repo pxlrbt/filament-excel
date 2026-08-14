@@ -8,6 +8,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -86,7 +88,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     protected ?Model $modelInstance = null;
 
     /**
-     * @var \Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Query\Builder|mixed|null
+     * @var Relation|Builder|mixed|null
      */
     protected $query = null;
 
@@ -269,7 +271,7 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Query\Builder|mixed|null
+     * @return Relation|Builder|mixed|null
      */
     public function query()
     {
