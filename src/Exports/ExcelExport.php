@@ -304,7 +304,6 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         }
 
         $livewire = $this->getLivewire();
-        $model = $this->getModelInstance();
 
         $query = $this->useTableQuery
             ? $livewire->getFilteredSortedTableQuery()
@@ -320,10 +319,31 @@ class ExcelExport implements FromQuery, HasHeadings, HasMapping, ShouldAutoSize,
         return $this->query = $query
             ->when(
                 $this->recordIds,
-                fn ($query) => $model->getKeyType() === 'string'
-                    ? $query->whereIn($this->modelKeyName, $this->recordIds)
-                    : $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
+                fn ($query) => $this->hasIntegerRecordIds()
+                    ? $query->whereIntegerInRaw($this->modelKeyName, $this->recordIds)
+                    : $query->whereIn($this->modelKeyName, $this->recordIds)
             );
+    }
+
+    /**
+     * Decide whether the keys can go into the query as raw integers.
+     *
+     * The model's `$keyType` is not enough: a model with a string key that forgot to
+     * declare it would have every key cast to 0 by `whereIntegerInRaw()`.
+     */
+    protected function hasIntegerRecordIds(): bool
+    {
+        if ($this->getModelInstance()->getKeyType() !== 'int') {
+            return false;
+        }
+
+        foreach ($this->recordIds as $recordId) {
+            if (! is_int($recordId) && ! ctype_digit((string) $recordId)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function evaluate(mixed $value, array $parameters = []): mixed
