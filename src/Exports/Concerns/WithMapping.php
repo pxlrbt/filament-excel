@@ -107,6 +107,8 @@ trait WithMapping
                     'column' => $column->tableColumn,
                     'livewire' => $this->getLivewire(),
                     'record' => $record,
+                    // Filament >= 5.10 formatters take `?Model $relatedRecord`; without it the container tries to build a Model.
+                    'relatedRecord' => null,
                     'state' => $state,
                 ]);
 
