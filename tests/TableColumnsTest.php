@@ -101,3 +101,23 @@ it('exports a date column whose format depends on the record', function () {
     expect(exportColumn(TextColumn::make('published_at')->date(fn (Post $record) => $record->date_format)))
         ->toBe('07/04/2026');
 });
+
+// Regression test for #280: setAccessible() is deprecated since PHP 8.5.
+it('exports a column without deprecations from the package', function () {
+    $deprecations = [];
+    set_error_handler(function (int $errno, string $errstr, string $errfile) use (&$deprecations) {
+        if (str_starts_with(realpath($errfile), realpath(__DIR__.'/../src'))) {
+            $deprecations[] = $errstr;
+        }
+
+        return true;
+    }, E_DEPRECATED);
+
+    try {
+        exportColumn(TextColumn::make('title'));
+    } finally {
+        restore_error_handler();
+    }
+
+    expect($deprecations)->toBe([]);
+});

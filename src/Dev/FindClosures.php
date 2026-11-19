@@ -63,8 +63,6 @@ class FindClosures
         while ($ref) {
             foreach ($ref->getProperties() as $property) {
                 try {
-                    $property->setAccessible(true);
-
                     if (! $property->isInitialized($target)) {
                         continue;
                     }

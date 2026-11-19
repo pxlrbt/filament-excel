@@ -90,7 +90,6 @@ class Column
         // Remove all closures from cloned TableColumn for queue serialization
         $properties = (new ReflectionClass($clone))->getProperties();
         foreach ($properties as $property) {
-            $property->setAccessible(true);
             try {
                 $value = $property->getValue($clone);
                 $property->setValue($clone, $this->removeClosuresFromValue($value));
@@ -104,7 +103,6 @@ class Column
         $clone->table(null);
 
         $ref = new \ReflectionProperty($clone, 'summarizers');
-        $ref->setAccessible(true);
         $ref->setValue($clone, []);
 
         $this->tableColumn = $clone;
